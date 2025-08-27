@@ -1,23 +1,5 @@
 {
   "pages": {
-    "/auth/signup/page": [
-      "static/chunks/_7ca33a97._.css",
-      "static/chunks/node_modules__pnpm_4fe2640b._.js",
-      "static/chunks/src_app_providers_tsx_9c18dcf0._.js",
-      "static/chunks/src_app_layout_tsx_f71d416f._.js",
-      "static/chunks/b5d7d_next_dist_client_components_builtin_global-error_efcfd7d7.js",
-      "static/chunks/src_components_auth_sign-up-form_tsx_20644620._.js",
-      "static/chunks/src_app_auth_signup_page_tsx_efcfd7d7._.js",
-      "static/chunks/[turbopack]_browser_dev_hmr-client_hmr-client_ts_265c9a2e._.js",
-      "static/chunks/b5d7d_next_dist_compiled_react-dom_e2c4ff07._.js",
-      "static/chunks/b5d7d_next_dist_compiled_next-devtools_index_9693f825.js",
-      "static/chunks/b5d7d_next_dist_compiled_2edf9df4._.js",
-      "static/chunks/b5d7d_next_dist_client_e0517feb._.js",
-      "static/chunks/b5d7d_next_dist_0fbe6411._.js",
-      "static/chunks/69652_@swc_helpers_cjs_77b72907._.js",
-      "static/chunks/_a0ff3932._.js",
-      "static/chunks/turbopack-_d0990089._.js"
-    ],
     "/calculator/u-contract/page": [
       "static/chunks/_7ca33a97._.css",
       "static/chunks/node_modules__pnpm_4fe2640b._.js",
