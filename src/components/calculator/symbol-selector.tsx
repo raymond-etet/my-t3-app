@@ -16,18 +16,17 @@ export function SymbolSelector({
       <label className="label">
         <span className="label-text font-semibold">选择币种</span>
       </label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="select select-bordered w-full"
-      >
-        <option value="">请选择币种</option>
+      <div className="tabs tabs-boxed">
         {symbols.map((symbol) => (
-          <option key={symbol} value={symbol}>
+          <button
+            key={symbol}
+            className={`tab ${value === symbol ? "tab-active" : ""}`}
+            onClick={() => onChange(symbol)}
+          >
             {symbol}
-          </option>
+          </button>
         ))}
-      </select>
+      </div>
     </div>
   );
 }

@@ -11,7 +11,7 @@ import { useCalculations } from "~/hooks/use-calculations";
 const SYMBOLS = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "ADAUSDT", "SOLUSDT"];
 
 export function UContractCalculator() {
-  const [symbol, setSymbol] = useState("");
+  const [symbol, setSymbol] = useState("BTCUSDT");
   const [entryPrice, setEntryPrice] = useState("");
   const [stopLossPrice, setStopLossPrice] = useState("");
   const [stopLossAmount, setStopLossAmount] = useState("");
