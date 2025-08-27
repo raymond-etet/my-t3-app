@@ -48,12 +48,12 @@ export function useCalculations() {
     // 固定手续费率（万2）
     const FEE_RATE = 0.0002;
 
+    // 计算所需仓位价值 = 止损金额 / 损失比例
+    const requiredPositionValue = stopLossAmount / lossRatio;
+
     // 计算所需倍数（当没有输入倍数时）
     let requiredLeverage: number | null = null;
     let totalFee: number | null = null;
-
-    // 计算所需仓位价值 = 止损金额 / 损失比例
-    const requiredPositionValue = stopLossAmount / lossRatio;
 
     if (!leverage) {
       // 所需倍数 = 所需仓位价值 / 止损金额
@@ -65,10 +65,30 @@ export function useCalculations() {
     if (leverage) {
       // 所需本金 = 所需仓位价值 / 倍数
       requiredMargin = requiredPositionValue / leverage;
+
+      // 确保所需本金大于止损金额
+      if (requiredMargin < stopLossAmount) {
+        // 调整杠杆倍数为最小值，使本金等于止损金额
+        const minLeverage = requiredPositionValue / stopLossAmount;
+        requiredMargin = requiredPositionValue / minLeverage;
+      }
+    } else {
+      // 当没有输入倍数时，使用计算出的倍数计算本金
+      if (requiredLeverage) {
+        requiredMargin = requiredPositionValue / requiredLeverage;
+
+        // 确保所需本金大于止损金额
+        if (requiredMargin < stopLossAmount) {
+          // 调整杠杆倍数为最小值，使本金等于止损金额
+          const minLeverage = requiredPositionValue / stopLossAmount;
+          requiredLeverage = minLeverage;
+          requiredMargin = requiredPositionValue / minLeverage;
+        }
+      }
     }
 
     // 计算总手续费（开仓+平仓），仅用于显示
-    totalFee = requiredPositionValue * FEE_RATE * 2;
+    totalFee = requiredPositionValue * 0.0002 * 2;
 
     setResult({
       requiredLeverage,
