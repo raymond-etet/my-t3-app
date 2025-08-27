@@ -145,20 +145,19 @@ export function UContractCalculator() {
 
         {/* 右侧：显示区域 */}
         <div className="space-y-6">
-          <DisplayInfo
-            symbol={symbol}
-            commissionRate={commissionRate}
-            fundingRate={fundingRate}
-            loading={loading}
-            error={error}
-          />
-
           <CalculationResults
             requiredLeverage={requiredLeverage}
             requiredMargin={requiredMargin}
             positionType={positionType}
             hasLeverage={!!leverage}
             totalFee={totalFee}
+          />
+          <DisplayInfo
+            symbol={symbol}
+            commissionRate={commissionRate}
+            fundingRate={fundingRate}
+            loading={loading}
+            error={error}
           />
         </div>
       </div>
