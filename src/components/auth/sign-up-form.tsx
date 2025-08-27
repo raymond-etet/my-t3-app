@@ -56,20 +56,22 @@ export function SignUp() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-base-200 to-base-300">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-base-200 to-base-300 p-4">
       <div className="card w-full max-w-md bg-base-100 shadow-2xl">
-        <div className="card-body p-8">
+        <div className="card-body p-6 sm:p-8">
           <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-base-content mb-2">
+            <h2 className="text-2xl sm:text-3xl font-bold text-base-content mb-2">
               创建账号
             </h2>
-            <p className="text-base-content/70">加入我们，开始您的旅程</p>
+            <p className="text-sm sm:text-base text-base-content/70">
+              加入我们，开始您的旅程
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <label className="block text-sm font-medium text-base-content mb-2">
-                用户名
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text text-base font-medium">用户名</span>
               </label>
               <input
                 type="text"
@@ -81,9 +83,11 @@ export function SignUp() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-base-content mb-2">
-                邮箱地址
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text text-base font-medium">
+                  邮箱地址
+                </span>
               </label>
               <input
                 type="email"
@@ -95,9 +99,9 @@ export function SignUp() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-base-content mb-2">
-                密码
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text text-base font-medium">密码</span>
               </label>
               <input
                 type="password"
@@ -109,9 +113,11 @@ export function SignUp() {
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-base-content mb-2">
-                确认密码
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text text-base font-medium">
+                  确认密码
+                </span>
               </label>
               <input
                 type="password"
