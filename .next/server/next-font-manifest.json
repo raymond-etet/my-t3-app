@@ -1,5 +1,11 @@
 {
   "app": {
+    "[project]/src/app/auth/signin/page": [
+      "static/media/caa3a2e1cccd8315-s.p.6435ea53.woff2"
+    ],
+    "[project]/src/app/auth/signup/page": [
+      "static/media/caa3a2e1cccd8315-s.p.6435ea53.woff2"
+    ],
     "[project]/src/app/page": [
       "static/media/caa3a2e1cccd8315-s.p.6435ea53.woff2"
     ]
