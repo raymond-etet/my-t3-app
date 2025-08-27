@@ -1,15 +1,6 @@
 {
   "app": {
-    "[project]/src/app/auth/signin/page": [
-      "static/media/Geist_Variable-s.p.f19e4721.woff2"
-    ],
     "[project]/src/app/calculator/u-contract/page": [
-      "static/media/Geist_Variable-s.p.f19e4721.woff2"
-    ],
-    "[project]/src/app/page": [
-      "static/media/Geist_Variable-s.p.f19e4721.woff2"
-    ],
-    "[project]/src/app/profile/page": [
       "static/media/Geist_Variable-s.p.f19e4721.woff2"
     ]
   },

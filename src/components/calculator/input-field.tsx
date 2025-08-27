@@ -9,6 +9,11 @@ interface InputFieldProps {
   step?: string;
   min?: string;
   max?: string;
+  button?: {
+    text: string;
+    onClick: () => void;
+    className?: string;
+  };
 }
 
 export function InputField({
@@ -20,22 +25,34 @@ export function InputField({
   step,
   min,
   max,
+  button,
 }: InputFieldProps) {
   return (
     <div className="form-control">
       <label className="label">
         <span className="label-text font-semibold">{label}</span>
       </label>
-      <input
-        type={type}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        step={step}
-        min={min}
-        max={max}
-        className="input input-bordered w-full"
-      />
+      <div className="join w-full">
+        <input
+          type={type}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          step={step}
+          min={min}
+          max={max}
+          className="input input-bordered join-item flex-1"
+        />
+        {button && (
+          <button
+            type="button"
+            onClick={button.onClick}
+            className={`btn join-item ${button.className || "btn-primary"}`}
+          >
+            {button.text}
+          </button>
+        )}
+      </div>
     </div>
   );
 }

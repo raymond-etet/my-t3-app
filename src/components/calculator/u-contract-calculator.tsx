@@ -37,12 +37,12 @@ export function UContractCalculator() {
     }
   }, [symbol, fetchSymbolData]);
 
-  // 当未输入开仓价但有币种时，使用最新价格
+  // 当选择币种或价格更新时，自动填充开仓价
   useEffect(() => {
-    if (symbol && currentPrice && !entryPrice) {
+    if (symbol && currentPrice) {
       setEntryPrice(currentPrice.toString());
     }
-  }, [symbol, currentPrice, entryPrice]);
+  }, [symbol, currentPrice]);
 
   // 实时计算
   useEffect(() => {
@@ -79,6 +79,15 @@ export function UContractCalculator() {
                   placeholder={currentPrice ? currentPrice.toString() : "0.00"}
                   type="number"
                   step="0.01"
+                  button={{
+                    text: "刷新",
+                    onClick: () => {
+                      if (symbol) {
+                        fetchSymbolData(symbol);
+                      }
+                    },
+                    className: "btn-secondary",
+                  }}
                 />
 
                 <InputField
@@ -116,6 +125,13 @@ export function UContractCalculator() {
                   type="number"
                   min="1"
                   max="125"
+                  button={{
+                    text: "最大倍数",
+                    onClick: () => {
+                      setLeverage("125");
+                    },
+                    className: "btn-secondary",
+                  }}
                 />
               </div>
             </div>
