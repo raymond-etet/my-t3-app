@@ -27,8 +27,13 @@ export function UContractCalculator() {
     fetchSymbolData,
   } = useBinanceData();
 
-  const { requiredLeverage, requiredMargin, positionType, calculate } =
-    useCalculations();
+  const {
+    requiredLeverage,
+    requiredMargin,
+    positionType,
+    totalFee,
+    calculate,
+  } = useCalculations();
 
   // 当选择币种时获取数据
   useEffect(() => {
@@ -153,6 +158,7 @@ export function UContractCalculator() {
             requiredMargin={requiredMargin}
             positionType={positionType}
             hasLeverage={!!leverage}
+            totalFee={totalFee}
           />
         </div>
       </div>

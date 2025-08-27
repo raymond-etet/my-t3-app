@@ -5,6 +5,7 @@ interface CalculationResultsProps {
   requiredMargin: number | null;
   positionType: "long" | "short" | null;
   hasLeverage: boolean;
+  totalFee?: number | null;
 }
 
 export function CalculationResults({
@@ -12,6 +13,7 @@ export function CalculationResults({
   requiredMargin,
   positionType,
   hasLeverage,
+  totalFee,
 }: CalculationResultsProps) {
   const formatNumber = (num: number) => {
     return num.toFixed(4).replace(/\.?0+$/, "");
@@ -56,6 +58,15 @@ export function CalculationResults({
               <div className="stat-desc text-xs">
                 在当前倍数下达到止损金额所需的本金
               </div>
+            </div>
+          )}
+          {totalFee && totalFee > 0 && (
+            <div className="stat bg-base-100 rounded-lg">
+              <div className="stat-title text-sm">总手续费</div>
+              <div className="stat-value text-warning text-xl">
+                {totalFee.toFixed(4)} USDT
+              </div>
+              <div className="stat-desc text-xs">开仓+平仓手续费（万2×2）</div>
             </div>
           )}
 

@@ -13,6 +13,7 @@ interface CalculationResult {
   requiredLeverage: number | null;
   requiredMargin: number | null;
   positionType: "long" | "short" | null;
+  totalFee: number | null;
 }
 
 export function useCalculations() {
@@ -20,6 +21,7 @@ export function useCalculations() {
     requiredLeverage: null,
     requiredMargin: null,
     positionType: null,
+    totalFee: null,
   });
 
   const calculate = useCallback((params: CalculationParams) => {
@@ -30,6 +32,7 @@ export function useCalculations() {
         requiredLeverage: null,
         requiredMargin: null,
         positionType: null,
+        totalFee: null,
       });
       return;
     }
@@ -42,11 +45,17 @@ export function useCalculations() {
     const priceDiff = Math.abs(entryPrice - stopLossPrice);
     const lossRatio = priceDiff / entryPrice;
 
+    // 固定手续费率（万2）
+    const FEE_RATE = 0.0002;
+
     // 计算所需倍数（当没有输入倍数时）
     let requiredLeverage: number | null = null;
+    let totalFee: number | null = null;
+
+    // 计算所需仓位价值 = 止损金额 / 损失比例
+    const requiredPositionValue = stopLossAmount / lossRatio;
+
     if (!leverage) {
-      // 所需仓位价值 = 止损金额 / 损失比例
-      const requiredPositionValue = stopLossAmount / lossRatio;
       // 所需倍数 = 所需仓位价值 / 止损金额
       requiredLeverage = requiredPositionValue / stopLossAmount;
     }
@@ -54,16 +63,18 @@ export function useCalculations() {
     // 计算所需本金（当输入了倍数时）
     let requiredMargin: number | null = null;
     if (leverage) {
-      // 所需仓位价值 = 止损金额 / 损失比例
-      const requiredPositionValue = stopLossAmount / lossRatio;
       // 所需本金 = 所需仓位价值 / 倍数
       requiredMargin = requiredPositionValue / leverage;
     }
+
+    // 计算总手续费（开仓+平仓），仅用于显示
+    totalFee = requiredPositionValue * FEE_RATE * 2;
 
     setResult({
       requiredLeverage,
       requiredMargin,
       positionType,
+      totalFee,
     });
   }, []);
 

@@ -59,25 +59,12 @@ export function DisplayInfo({
           {/* 手续费率 */}
           <div>
             <h3 className="font-semibold text-base-content mb-2">手续费率</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div className="stat bg-base-100 rounded-lg">
-                <div className="stat-title text-sm">Maker费率</div>
-                <div className="stat-value text-lg">
-                  {commissionRate?.makerCommissionRate
-                    ? `${(
-                        parseFloat(commissionRate.makerCommissionRate) * 100
-                      ).toFixed(3)}%`
-                    : "/"}
-                </div>
-              </div>
-              <div className="stat bg-base-100 rounded-lg">
-                <div className="stat-title text-sm">Taker费率</div>
-                <div className="stat-value text-lg">
-                  {commissionRate?.takerCommissionRate
-                    ? `${(
-                        parseFloat(commissionRate.takerCommissionRate) * 100
-                      ).toFixed(3)}%`
-                    : "/"}
+                <div className="stat-title text-sm">开平手续费（固定）</div>
+                <div className="stat-value text-lg text-primary">0.02%</div>
+                <div className="stat-desc text-xs">
+                  开仓和平仓各收取万2手续费
                 </div>
               </div>
             </div>
