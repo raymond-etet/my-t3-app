@@ -6,8 +6,8 @@ import { type Metadata } from "next";
 import { AuthProvider } from "~/app/providers";
 
 export const metadata: Metadata = {
-  title: "T3 应用",
-  description: "使用 T3 技术栈构建的应用",
+  title: "Carlos/Ray 合约计算器",
+  description: "专业的加密货币合约计算工具",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
