@@ -16,14 +16,18 @@ export function SymbolSelector({
       <label className="label">
         <span className="label-text font-semibold">选择币种</span>
       </label>
-      <div className="tabs tabs-boxed">
+      <div className="flex flex-wrap gap-3">
         {symbols.map((symbol) => (
           <button
             key={symbol}
-            className={`tab ${value === symbol ? "tab-active" : ""}`}
+            className={`btn btn-sm rounded-full px-4 py-2 transition-all duration-200 ease-in-out transform hover:scale-105 hover:shadow-md ${
+              value === symbol
+                ? "btn-primary text-white shadow-lg scale-105"
+                : "bg-neutral text-neutral-content hover:bg-neutral-focus"
+            }`}
             onClick={() => onChange(symbol)}
           >
-            {symbol}
+            <span className="font-medium">{symbol}</span>
           </button>
         ))}
       </div>

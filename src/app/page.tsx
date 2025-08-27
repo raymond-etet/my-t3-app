@@ -13,7 +13,7 @@ export default async function HomePage() {
         </div>
 
         <h1 className="text-5xl font-extrabold tracking-tight text-white sm:text-[5rem]">
-          Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
+          专业 <span className="text-[hsl(280,100%,70%)]">交易</span> 员
         </h1>
 
         {session ? (
@@ -41,28 +41,20 @@ export default async function HomePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 md:gap-8">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 md:gap-16">
               <a
                 href="/calculator/u-contract"
-                className="flex max-w-xs flex-col gap-4 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 p-4 text-white hover:from-purple-600 hover:to-pink-600"
+                className="flex max-w-xs flex-col gap-8 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 p-4 text-white hover:from-purple-600 hover:to-pink-600"
               >
                 <h3 className="text-2xl font-bold">📊 U本位合约计算器</h3>
                 <div className="text-lg">专业的加密货币合约计算工具</div>
               </a>
               <a
                 href="/profile"
-                className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
+                className="flex max-w-xs flex-col gap-8 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               >
                 <h3 className="text-2xl font-bold">用户中心 →</h3>
                 <div className="text-lg">管理您的账户信息和设置</div>
-              </a>
-              <a
-                href="https://create.t3.gg/en/introduction"
-                target="_blank"
-                className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              >
-                <h3 className="text-2xl font-bold">文档 →</h3>
-                <div className="text-lg">了解更多关于 Create T3 App 的信息</div>
               </a>
             </div>
           </div>
@@ -70,7 +62,7 @@ export default async function HomePage() {
           <div className="flex flex-col items-center gap-6">
             <div className="rounded-lg bg-white/10 p-8 text-center">
               <h2 className="text-2xl font-bold mb-4">开始使用</h2>
-              <p className="text-lg mb-6">请登录以体验完整的 T3 App 功能</p>
+              <p className="text-lg mb-6">请登录以体验完整的功能</p>
               <LoginButton />
             </div>
 
@@ -81,14 +73,6 @@ export default async function HomePage() {
               >
                 <h3 className="text-2xl font-bold">📊 U本位合约计算器</h3>
                 <div className="text-lg">专业的加密货币合约计算工具</div>
-              </a>
-              <a
-                href="https://create.t3.gg/en/introduction"
-                target="_blank"
-                className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
-              >
-                <h3 className="text-2xl font-bold">文档 →</h3>
-                <div className="text-lg">了解更多关于 Create T3 App 的信息</div>
               </a>
             </div>
           </div>

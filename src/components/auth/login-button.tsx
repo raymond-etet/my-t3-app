@@ -9,18 +9,6 @@ export function LoginButton() {
   if (session) {
     return (
       <div className="flex items-center gap-4">
-        <Link
-          href="/calculator/u-contract"
-          className="text-sm font-medium text-gray-700 hover:text-gray-900"
-        >
-          合约计算器
-        </Link>
-        <Link
-          href="/profile"
-          className="text-sm font-medium text-gray-700 hover:text-gray-900"
-        >
-          {session.user?.name || session.user?.email}
-        </Link>
         <button
           onClick={() => signOut()}
           className="rounded-md bg-red-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500"

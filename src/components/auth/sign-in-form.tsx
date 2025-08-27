@@ -33,39 +33,39 @@ export function SignIn({ callbackUrl }: { callbackUrl?: string }) {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-base-200">
-      <div className="card w-full max-w-md bg-base-100 shadow-xl">
-        <div className="card-body">
-          <h2 className="card-title text-2xl font-bold justify-center">
-            欢迎回来
-          </h2>
-          <p className="text-center text-base-content/70 mb-6">
-            请输入您的登录信息
-          </p>
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-base-200 to-base-300">
+      <div className="card w-full max-w-md bg-base-100 shadow-2xl">
+        <div className="card-body p-8">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-base-content mb-2">
+              欢迎回来
+            </h2>
+            <p className="text-base-content/70">请输入您的登录信息</p>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">邮箱</span>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label className="block text-sm font-medium text-base-content mb-2">
+                邮箱地址
               </label>
               <input
                 type="email"
                 placeholder="your@email.com"
-                className="input input-bordered"
+                className="input input-bordered w-full"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
             </div>
 
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">密码</span>
+            <div>
+              <label className="block text-sm font-medium text-base-content mb-2">
+                密码
               </label>
               <input
                 type="password"
-                placeholder="••••••••"
-                className="input input-bordered"
+                placeholder="请输入密码"
+                className="input input-bordered w-full"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -74,34 +74,45 @@ export function SignIn({ callbackUrl }: { callbackUrl?: string }) {
 
             {error && (
               <div className="alert alert-error">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="stroke-current shrink-0 h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
                 <span>{error}</span>
               </div>
             )}
 
-            <div className="form-control mt-6">
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={loading}
-              >
-                {loading ? (
-                  <>
-                    <span className="loading loading-spinner"></span>
-                    登录中...
-                  </>
-                ) : (
-                  "登录"
-                )}
-              </button>
-            </div>
+            <button
+              type="submit"
+              className="btn btn-primary w-full"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <span className="loading loading-spinner loading-sm"></span>
+                  登录中...
+                </>
+              ) : (
+                "登录"
+              )}
+            </button>
           </form>
 
-          <div className="divider">或者</div>
+          <div className="divider my-8">或者</div>
 
           <div className="text-center">
             <p className="text-sm text-base-content/70">
               还没有账号？{" "}
-              <a href="/auth/signup" className="link link-primary">
+              <a href="/auth/signup" className="link link-primary font-medium">
                 立即注册
               </a>
             </p>
