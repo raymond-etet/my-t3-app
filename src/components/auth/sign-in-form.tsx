@@ -3,7 +3,7 @@
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 
-export function SignIn() {
+export function SignIn({ callbackUrl }: { callbackUrl?: string }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -19,7 +19,7 @@ export function SignIn() {
         email,
         password,
         redirect: true,
-        callbackUrl: "/",
+        callbackUrl: callbackUrl || "/",
       });
 
       if (result?.error) {

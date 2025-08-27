@@ -10,6 +10,12 @@ export function LoginButton() {
     return (
       <div className="flex items-center gap-4">
         <Link
+          href="/calculator/u-contract"
+          className="text-sm font-medium text-gray-700 hover:text-gray-900"
+        >
+          合约计算器
+        </Link>
+        <Link
           href="/profile"
           className="text-sm font-medium text-gray-700 hover:text-gray-900"
         >
@@ -27,7 +33,7 @@ export function LoginButton() {
 
   return (
     <Link
-      href="/auth/signin"
+      href="/auth/signin?callbackUrl=/calculator/u-contract"
       className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500"
     >
       登录
