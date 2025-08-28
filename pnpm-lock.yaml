@@ -26,6 +26,9 @@ importers:
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
+      dayjs:
+        specifier: ^1.11.15
+        version: 1.11.15
       geist:
         specifier: ^1.4.2
         version: 1.4.2(next@15.5.2(react-dom@19.1.1(react@19.1.1))(react@19.1.1))
