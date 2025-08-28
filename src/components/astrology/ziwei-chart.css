@@ -157,3 +157,13 @@
   font-weight: bold;
   color: #237804;
 }
+
+/* 为命宫添加特殊样式 */
+.ziwei-soul-palace {
+  background-color: rgba(59, 130, 246, 0.1); /* 淡蓝色背景 */
+}
+
+/* 为身宫添加特殊样式 */
+.ziwei-body-palace {
+  background-color: rgba(239, 68, 68, 0.1); /* 淡红色背景 */
+}

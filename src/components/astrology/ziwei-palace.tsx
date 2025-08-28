@@ -2,11 +2,11 @@
 
 import React from "react";
 import type { Palace } from "./ziwei-types"; // 引入将在下一步创建的类型文件
-
 // 定义组件的 props 类型，它接收一个宫位对象和索引
 interface ZiweiPalaceProps {
   palace: Palace;
   index: number;
+  soulPalaceBranch?: string; // 接收命宫地支用于高亮
 }
 
 /**
@@ -14,7 +14,14 @@ interface ZiweiPalaceProps {
  * @param {ZiweiPalaceProps} props - 包含宫位数据和索引的 props
  * @returns {React.ReactElement} - 单个宫位的 JSX 元素
  */
-export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({ palace, index }) => {
+export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({
+  palace,
+  index,
+  soulPalaceBranch,
+}) => {
+  // 判断当前宫位是否为命宫
+  const isSoulPalace = palace.earthlyBranch === soulPalaceBranch;
+
   // 渲染星曜的辅助函数，增强四化显示
   const renderStars = (stars: Palace["majorStars"], className: string = "") => {
     if (!stars || stars.length === 0) {
@@ -69,12 +76,18 @@ export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({ palace, index }) => {
     <div
       className={`ziwei-palace-card ${
         palace.isBodyPalace ? "ziwei-body-palace" : ""
-      }`}
+      } ${isSoulPalace ? "ziwei-soul-palace" : ""}`}
       data-palace={index}
     >
       {/* 宫位标题区域 */}
       <div className="ziwei-palace-header">
-        <h3 className="font-bold text-sm text-gray-800">{palace.name}</h3>
+        <h3 className="font-bold text-sm text-gray-800">
+          {palace.name}
+          {/* 如果是身宫，则显示 "(身)" */}
+          {palace.isBodyPalace && (
+            <span className="text-red-500 ml-1">(身)</span>
+          )}
+        </h3>
         <div className="text-xs text-gray-500">
           {palace.decadal.range.join("-")}岁
         </div>

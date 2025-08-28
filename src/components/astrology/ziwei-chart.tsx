@@ -291,6 +291,7 @@ export function ZiweiChart() {
                     key={`palace-${palaceIndex}`}
                     palace={palace}
                     index={palaceIndex}
+                    soulPalaceBranch={chartData.earthlyBranchOfSoulPalace}
                   />
                 );
               })}

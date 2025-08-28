@@ -189,14 +189,11 @@ export async function GET(request: NextRequest) {
 
     // 6. 处理宫位数据，确保正确标识身宫
     const processedPalaces = chart.palaces.map((palace: any, index: number) => {
-      // 根据身宫地支确定身宫位置
-      const isBodyPalace =
-        palace.earthlyBranch === chart.earthlyBranchOfBodyPalace;
-
+      // 直接使用 iztro 库返回的 palace 对象，它已经包含了正确的 isBodyPalace 属性。
+      // 我们只需要为前端添加一个 index 即可。
       return {
         ...palace,
         index: index,
-        isBodyPalace: isBodyPalace,
       };
     });
 
