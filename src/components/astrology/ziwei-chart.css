@@ -167,3 +167,101 @@
 .ziwei-body-palace {
   background-color: rgba(239, 68, 68, 0.1); /* 淡红色背景 */
 }
+
+/* 飞星盘样式 */
+.ziwei-flying-chart .ziwei-flying-highlight {
+  border: 2px solid #f59e0b;
+  background-color: rgba(245, 158, 11, 0.1);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+}
+
+.ziwei-flying-arrow {
+  position: absolute;
+  width: 2px;
+  background-color: #f59e0b;
+  z-index: 10;
+}
+
+.ziwei-flying-arrow::after {
+  content: "";
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  width: 0;
+  height: 0;
+  border-left: 4px solid #f59e0b;
+  border-top: 3px solid transparent;
+  border-bottom: 3px solid transparent;
+}
+
+/* 三合盘样式 */
+.ziwei-sanhe-chart .ziwei-sanhe-highlight {
+  border: 2px solid #8b5cf6;
+  background-color: rgba(139, 92, 246, 0.1);
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
+}
+
+.ziwei-sanhe-connection {
+  position: absolute;
+  border: 1px dashed #8b5cf6;
+  z-index: 5;
+}
+
+/* 四化盘样式 */
+.ziwei-sihua-chart .ziwei-palace-card {
+  opacity: 0.3;
+  transition: opacity 0.3s ease;
+}
+
+.ziwei-sihua-chart .ziwei-sihua-highlight {
+  opacity: 1;
+  border: 2px solid #10b981;
+  background-color: rgba(16, 185, 129, 0.15);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+}
+
+.ziwei-sihua-chart .ziwei-star-mutagen {
+  font-size: 12px;
+  font-weight: bold;
+  transform: scale(1.2);
+}
+
+/* 排盘类型切换动画 */
+.ziwei-astrolabe {
+  transition: all 0.3s ease-in-out;
+}
+
+.ziwei-astrolabe.ziwei-flying-chart,
+.ziwei-astrolabe.ziwei-sanhe-chart,
+.ziwei-astrolabe.ziwei-sihua-chart {
+  position: relative;
+}
+
+/* 选项卡样式微调 */
+.ziwei-chart-tabs {
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.ziwei-chart-tab {
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.ziwei-chart-tab.active {
+  color: #3b82f6;
+}
+
+.ziwei-chart-tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background-color: #3b82f6;
+}
+
+.ziwei-chart-tab:hover {
+  color: #1f2937;
+  background-color: rgba(59, 130, 246, 0.05);
+}

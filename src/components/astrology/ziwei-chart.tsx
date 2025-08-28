@@ -1,9 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import type { IztroChart } from "./ziwei-types";
+import type { IztroChart, ChartType, ExtendedIztroChart } from "./ziwei-types";
 import { ZiweiPalace } from "./ziwei-palace";
 import { ZiweiTextChart } from "./ziwei-text-chart";
+import { ZiweiFlyingChart } from "./ziwei-flying-chart";
+import { ZiweiSanheChart } from "./ziwei-sanhe-chart";
+import { ZiweiSihuaChart } from "./ziwei-sihua-chart";
 import "./ziwei-chart.css";
 
 // 标准紫微斗数十二宫布局映射
@@ -39,10 +42,11 @@ export function ZiweiChart() {
   const [birthTime, setBirthTime] = useState<string>("12:00");
   const [gender, setGender] = useState<string>("male");
   const [lunar, setLunar] = useState<boolean>(false);
-  const [chartData, setChartData] = useState<IztroChart | null>(null);
+  const [chartData, setChartData] = useState<ExtendedIztroChart | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "text">("grid");
+  const [chartType, setChartType] = useState<ChartType>("standard");
 
   const handleSubmit = async () => {
     if (!birthDate || !birthTime) {
@@ -71,7 +75,7 @@ export function ZiweiChart() {
       const data = await response.json();
 
       // 转换API响应数据为前端需要的格式
-      const transformedData: IztroChart = {
+      const transformedData: ExtendedIztroChart = {
         gender: data.gender,
         solarDate: data.solarDate,
         lunarDate: data.lunarDate,
@@ -86,6 +90,11 @@ export function ZiweiChart() {
         body: data.body,
         fiveElementsClass: data.fiveElementsClass,
         palaces: data.palaces,
+        chartType: "standard", // 默认为标准盘
+        // 三种新排盘的数据处理将在后续实现
+        flyingStars: generateFlyingStarData(data.palaces),
+        sanheGroups: generateSanheGroups(data.earthlyBranchOfSoulPalace),
+        sihuaDisplay: generateSihuaDisplay(data.palaces),
       };
 
       setChartData(transformedData);
@@ -210,158 +219,340 @@ export function ZiweiChart() {
 
       {chartData && (
         <div className="bg-white rounded-lg shadow-lg p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-semibold text-gray-800">排盘结果</h3>
-            <div className="flex space-x-2">
+          <div className="flex flex-col gap-4 mb-6">
+            <div className="flex justify-between items-center">
+              <h3 className="text-xl font-semibold text-gray-800">排盘结果</h3>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`px-4 py-2 rounded-md ${
+                    viewMode === "grid"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  图形排盘
+                </button>
+                <button
+                  onClick={() => setViewMode("text")}
+                  className={`px-4 py-2 rounded-md ${
+                    viewMode === "text"
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-200 text-gray-700"
+                  }`}
+                >
+                  文字排盘
+                </button>
+              </div>
+            </div>
+
+            {/* 排盘类型选项卡 */}
+            <div className="flex space-x-2 border-b border-gray-200">
               <button
-                onClick={() => setViewMode("grid")}
-                className={`px-4 py-2 rounded-md ${
-                  viewMode === "grid"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-700"
+                onClick={() => setChartType("standard")}
+                className={`px-4 py-2 font-medium ${
+                  chartType === "standard"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
                 }`}
               >
-                图形排盘
+                标准盘
               </button>
               <button
-                onClick={() => setViewMode("text")}
-                className={`px-4 py-2 rounded-md ${
-                  viewMode === "text"
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-200 text-gray-700"
+                onClick={() => setChartType("flying")}
+                className={`px-4 py-2 font-medium ${
+                  chartType === "flying"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
                 }`}
               >
-                文字排盘
+                飞星盘
+              </button>
+              <button
+                onClick={() => setChartType("sanhe")}
+                className={`px-4 py-2 font-medium ${
+                  chartType === "sanhe"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                三合盘
+              </button>
+              <button
+                onClick={() => setChartType("sihua")}
+                className={`px-4 py-2 font-medium ${
+                  chartType === "sihua"
+                    ? "text-blue-600 border-b-2 border-blue-600"
+                    : "text-gray-500 hover:text-gray-700"
+                }`}
+              >
+                四化盘
               </button>
             </div>
           </div>
 
           {/* 基本信息显示 */}
 
-          {/* 紫微斗数标准排盘显示 */}
+          {/* 根据选择的排盘类型和显示模式渲染内容 */}
           {viewMode === "grid" ? (
-            <div className="ziwei-astrolabe">
-              {/* 生成12个宫位 */}
-              {Array.from({ length: 12 }, (_, palaceIndex) => {
-                const palace = chartData.palaces[palaceIndex];
-                if (!palace) return null;
+            <>
+              {chartType === "standard" && (
+                <div
+                  className={`ziwei-astrolabe ${getChartTypeClass(chartType)}`}
+                >
+                  {/* 生成12个宫位 */}
+                  {Array.from({ length: 12 }, (_, palaceIndex) => {
+                    const palace = chartData.palaces[palaceIndex];
+                    if (!palace) return null;
 
-                return (
-                  <ZiweiPalace
-                    key={`palace-${palaceIndex}`}
-                    palace={palace}
-                    index={palaceIndex}
-                    soulPalaceBranch={chartData.earthlyBranchOfSoulPalace}
-                    bodyPalaceBranch={chartData.earthlyBranchOfBodyPalace}
-                  />
-                );
-              })}
+                    return (
+                      <ZiweiPalace
+                        key={`palace-${palaceIndex}`}
+                        palace={palace}
+                        index={palaceIndex}
+                        soulPalaceBranch={chartData.earthlyBranchOfSoulPalace}
+                        bodyPalaceBranch={chartData.earthlyBranchOfBodyPalace}
+                        chartType={chartType}
+                        extendedData={chartData}
+                      />
+                    );
+                  })}
 
-              {/* 中心区域显示基本信息 - 占据4个格子 */}
-              <div className="ziwei-center-area">
-                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 text-center rounded-lg border border-indigo-200 w-full h-full flex flex-col justify-center">
-                  <div className="text-lg font-bold text-indigo-800 mb-4">
-                    <span
-                      className={`mr-2 ${
-                        chartData.gender === "男"
-                          ? "text-blue-600"
-                          : "text-pink-600"
-                      }`}
-                    >
-                      {chartData.gender === "男" ? "♂" : "♀"}
-                    </span>
-                    基本信息
-                  </div>
-                  <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
-                    <div className="text-left">
-                      <span className="font-semibold text-indigo-700 block">
-                        五行局：
-                      </span>
-                      <span className="text-gray-700">
-                        {chartData.fiveElementsClass}
-                      </span>
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-indigo-700 block">
-                        四柱：
-                      </span>
-                      <span className="text-gray-700 text-xs">
-                        {chartData.chineseDate}
-                      </span>
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-indigo-700 block">
-                        阳历：
-                      </span>
-                      <span className="text-gray-700">
-                        {chartData.solarDate}
-                      </span>
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-indigo-700 block">
-                        农历：
-                      </span>
-                      <span className="text-gray-700">
-                        {chartData.lunarDate}
-                      </span>
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-indigo-700 block">
-                        时辰：
-                      </span>
-                      <span className="text-gray-700">
-                        {chartData.time}({chartData.timeRange})
-                      </span>
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-indigo-700 block">
-                        生肖：
-                      </span>
-                      <span className="text-gray-700">{chartData.zodiac}</span>
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-indigo-700 block">
-                        星座：
-                      </span>
-                      <span className="text-gray-700">{chartData.sign}</span>
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-indigo-700 block">
-                        命主：
-                      </span>
-                      <span className="text-gray-700">{chartData.soul}</span>
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-indigo-700 block">
-                        身主：
-                      </span>
-                      <span className="text-gray-700">{chartData.body}</span>
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-indigo-700 block">
-                        命宫：
-                      </span>
-                      <span className="text-gray-700">
-                        {chartData.earthlyBranchOfSoulPalace}
-                      </span>
-                    </div>
-                    <div className="text-left">
-                      <span className="font-semibold text-indigo-700 block">
-                        身宫：
-                      </span>
-                      <span className="text-gray-700">
-                        {chartData.earthlyBranchOfBodyPalace}
-                      </span>
+                  {/* 中心区域显示基本信息 - 占据4个格子 */}
+                  <div className="ziwei-center-area">
+                    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-6 text-center rounded-lg border border-indigo-200 w-full h-full flex flex-col justify-center">
+                      <div className="text-lg font-bold text-indigo-800 mb-4">
+                        <span
+                          className={`mr-2 ${
+                            chartData.gender === "男"
+                              ? "text-blue-600"
+                              : "text-pink-600"
+                          }`}
+                        >
+                          {chartData.gender === "男" ? "♂" : "♀"}
+                        </span>
+                        基本信息
+                      </div>
+                      <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
+                        <div className="text-left">
+                          <span className="font-semibold text-indigo-700 block">
+                            五行局：
+                          </span>
+                          <span className="text-gray-700">
+                            {chartData.fiveElementsClass}
+                          </span>
+                        </div>
+                        <div className="text-left">
+                          <span className="font-semibold text-indigo-700 block">
+                            四柱：
+                          </span>
+                          <span className="text-gray-700 text-xs">
+                            {chartData.chineseDate}
+                          </span>
+                        </div>
+                        <div className="text-left">
+                          <span className="font-semibold text-indigo-700 block">
+                            阳历：
+                          </span>
+                          <span className="text-gray-700">
+                            {chartData.solarDate}
+                          </span>
+                        </div>
+                        <div className="text-left">
+                          <span className="font-semibold text-indigo-700 block">
+                            农历：
+                          </span>
+                          <span className="text-gray-700">
+                            {chartData.lunarDate}
+                          </span>
+                        </div>
+                        <div className="text-left">
+                          <span className="font-semibold text-indigo-700 block">
+                            时辰：
+                          </span>
+                          <span className="text-gray-700">
+                            {chartData.time}({chartData.timeRange})
+                          </span>
+                        </div>
+                        <div className="text-left">
+                          <span className="font-semibold text-indigo-700 block">
+                            生肖：
+                          </span>
+                          <span className="text-gray-700">
+                            {chartData.zodiac}
+                          </span>
+                        </div>
+                        <div className="text-left">
+                          <span className="font-semibold text-indigo-700 block">
+                            星座：
+                          </span>
+                          <span className="text-gray-700">
+                            {chartData.sign}
+                          </span>
+                        </div>
+                        <div className="text-left">
+                          <span className="font-semibold text-indigo-700 block">
+                            命主：
+                          </span>
+                          <span className="text-gray-700">
+                            {chartData.soul}
+                          </span>
+                        </div>
+                        <div className="text-left">
+                          <span className="font-semibold text-indigo-700 block">
+                            身主：
+                          </span>
+                          <span className="text-gray-700">
+                            {chartData.body}
+                          </span>
+                        </div>
+                        <div className="text-left">
+                          <span className="font-semibold text-indigo-700 block">
+                            命宫：
+                          </span>
+                          <span className="text-gray-700">
+                            {chartData.earthlyBranchOfSoulPalace}
+                          </span>
+                        </div>
+                        <div className="text-left">
+                          <span className="font-semibold text-indigo-700 block">
+                            身宫：
+                          </span>
+                          <span className="text-gray-700">
+                            {chartData.earthlyBranchOfBodyPalace}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
+              )}
+
+              {chartType === "flying" && (
+                <ZiweiFlyingChart chartData={chartData} />
+              )}
+
+              {chartType === "sanhe" && (
+                <ZiweiSanheChart chartData={chartData} />
+              )}
+
+              {chartType === "sihua" && (
+                <ZiweiSihuaChart chartData={chartData} />
+              )}
+            </>
           ) : (
-            <ZiweiTextChart chartData={chartData} />
+            <ZiweiTextChart chartData={chartData as IztroChart} />
           )}
         </div>
       )}
     </div>
   );
+}
+
+// 辅助函数：根据排盘类型返回CSS类名
+function getChartTypeClass(chartType: ChartType): string {
+  switch (chartType) {
+    case "flying":
+      return "ziwei-flying-chart";
+    case "sanhe":
+      return "ziwei-sanhe-chart";
+    case "sihua":
+      return "ziwei-sihua-chart";
+    default:
+      return "ziwei-standard-chart";
+  }
+}
+
+// 临时辅助函数：生成飞星盘数据（后续完善）
+function generateFlyingStarData(palaces: any[]): any[] {
+  // 简化实现，寻找带四化的星曜
+  const flyingStars: any[] = [];
+  palaces.forEach((palace, palaceIndex) => {
+    const allStars = [
+      ...palace.majorStars,
+      ...palace.minorStars,
+      ...palace.adjectiveStars,
+    ];
+    allStars.forEach((star) => {
+      if (star.mutagen) {
+        flyingStars.push({
+          fromPalace: palaceIndex,
+          toPalace: palaceIndex, // 暂时设为同宫位，后续优化
+          starName: star.name,
+          mutagen: star.mutagen,
+          level: "life",
+        });
+      }
+    });
+  });
+  return flyingStars;
+}
+
+// 临时辅助函数：生成三合盘数据
+function generateSanheGroups(soulPalaceBranch: string): any[] {
+  // 根据命宫地支确定三方四正
+  const branchMap: { [key: string]: number } = {
+    子: 0,
+    丑: 1,
+    寅: 2,
+    卯: 3,
+    辰: 4,
+    巳: 5,
+    午: 6,
+    未: 7,
+    申: 8,
+    酉: 9,
+    戌: 10,
+    亥: 11,
+  };
+
+  const soulIndex = branchMap[soulPalaceBranch] || 0;
+  return [
+    {
+      centerPalace: soulIndex,
+      relatedPalaces: [
+        soulIndex, // 命宫
+        (soulIndex + 4) % 12, // 官禄宫
+        (soulIndex + 8) % 12, // 财帛宫
+        (soulIndex + 6) % 12, // 迁移宫
+      ],
+      groupType: "命宫三方四正",
+    },
+  ];
+}
+
+// 临时辅助函数：生成四化盘数据
+function generateSihuaDisplay(palaces: any[]): any {
+  const sihua: { lu: any[]; quan: any[]; ke: any[]; ji: any[] } = {
+    lu: [],
+    quan: [],
+    ke: [],
+    ji: [],
+  };
+  palaces.forEach((palace) => {
+    const allStars = [
+      ...palace.majorStars,
+      ...palace.minorStars,
+      ...palace.adjectiveStars,
+    ];
+    allStars.forEach((star: any) => {
+      if (star.mutagen) {
+        switch (star.mutagen) {
+          case "禄":
+            sihua.lu.push(star);
+            break;
+          case "权":
+            sihua.quan.push(star);
+            break;
+          case "科":
+            sihua.ke.push(star);
+            break;
+          case "忌":
+            sihua.ji.push(star);
+            break;
+        }
+      }
+    });
+  });
+  return sihua;
 }

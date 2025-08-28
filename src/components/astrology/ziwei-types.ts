@@ -55,3 +55,38 @@ export interface IztroChart {
   fiveElementsClass: string; // 五行局
   palaces: Palace[]; // 12个宫位的数组
 }
+
+// 排盘类型枚举
+export type ChartType = "standard" | "flying" | "sanhe" | "sihua";
+
+// 飞星盘特殊数据结构
+export interface FlyingStarData {
+  fromPalace: number; // 四化星飞出的宫位索引
+  toPalace: number; // 四化星飞入的宫位索引
+  starName: string; // 四化星名称
+  mutagen: string; // 四化类型（禄权科忌）
+  level: "life" | "decade" | "year" | "month"; // 四化层级
+}
+
+// 三合盘数据结构
+export interface SanheGroup {
+  centerPalace: number; // 中心宫位索引
+  relatedPalaces: number[]; // 三方四正相关宫位索引
+  groupType: string; // 三合组类型描述
+}
+
+// 四化盘数据结构
+export interface SihuaDisplay {
+  lu: Star[]; // 所有化禄星
+  quan: Star[]; // 所有化权星
+  ke: Star[]; // 所有化科星
+  ji: Star[]; // 所有化忌星
+}
+
+// 扩展命盘数据，支持不同排盘类型
+export interface ExtendedIztroChart extends IztroChart {
+  chartType: ChartType;
+  flyingStars?: FlyingStarData[]; // 飞星盘数据
+  sanheGroups?: SanheGroup[]; // 三合盘数据
+  sihuaDisplay?: SihuaDisplay; // 四化盘数据
+}
