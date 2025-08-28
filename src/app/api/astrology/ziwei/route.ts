@@ -132,11 +132,12 @@ export async function GET(request: NextRequest) {
         });
 
         // 使用转换后的公历日期进行排盘
-        chart = iztro.astro.bySolar(
-          actualSolarDate,
+        chart = iztro.astro.byLunar(
+          year.toString(),
+          month.toString(),
+          day.toString(),
           birthTimeIndex,
           genderText,
-          true, // fixLeap
           lang
         );
 
@@ -189,11 +190,12 @@ export async function GET(request: NextRequest) {
 
     // 6. 处理宫位数据，确保正确标识身宫
     const processedPalaces = chart.palaces.map((palace: any, index: number) => {
-      // 直接使用 iztro 库返回的 palace 对象，它已经包含了正确的 isBodyPalace 属性。
-      // 我们只需要为前端添加一个 index 即可。
+      // 添加身宫和命宫标识
       return {
         ...palace,
         index: index,
+        isBodyPalace: palace.isBodyPalace,
+        isSoulPalace: palace.earthlyBranch === chart.earthlyBranchOfSoulPalace,
       };
     });
 

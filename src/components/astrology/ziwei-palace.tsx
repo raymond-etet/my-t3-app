@@ -7,6 +7,7 @@ interface ZiweiPalaceProps {
   palace: Palace;
   index: number;
   soulPalaceBranch?: string; // 接收命宫地支用于高亮
+  bodyPalaceBranch?: string; // 接收身宫地支用于高亮
 }
 
 /**
@@ -18,9 +19,12 @@ export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({
   palace,
   index,
   soulPalaceBranch,
+  bodyPalaceBranch,
 }) => {
   // 判断当前宫位是否为命宫
   const isSoulPalace = palace.earthlyBranch === soulPalaceBranch;
+  // 判断当前宫位是否为身宫
+  const isBodyPalace = palace.earthlyBranch === bodyPalaceBranch;
 
   // 渲染星曜的辅助函数，增强四化显示
   const renderStars = (stars: Palace["majorStars"], className: string = "") => {
@@ -75,7 +79,7 @@ export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({
   return (
     <div
       className={`ziwei-palace-card ${
-        palace.isBodyPalace ? "ziwei-body-palace" : ""
+        isBodyPalace ? "ziwei-body-palace" : ""
       } ${isSoulPalace ? "ziwei-soul-palace" : ""}`}
       data-palace={index}
     >
@@ -83,10 +87,10 @@ export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({
       <div className="ziwei-palace-header">
         <h3 className="font-bold text-sm text-gray-800">
           {palace.name}
-          {/* 如果是身宫，则显示 "(身)" */}
-          {palace.isBodyPalace && (
-            <span className="text-red-500 ml-1">(身)</span>
-          )}
+          {/* 如果是命宫，显示 "(命)" */}
+          {isSoulPalace && <span className="text-blue-500 ml-1">(命)</span>}
+          {/* 如果是身宫，显示 "(身)" */}
+          {isBodyPalace && <span className="text-red-500 ml-1">(身)</span>}
         </h3>
         <div className="text-xs text-gray-500">
           {palace.decadal.range.join("-")}岁

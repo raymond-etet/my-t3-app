@@ -292,6 +292,7 @@ export function ZiweiChart() {
                     palace={palace}
                     index={palaceIndex}
                     soulPalaceBranch={chartData.earthlyBranchOfSoulPalace}
+                    bodyPalaceBranch={chartData.earthlyBranchOfBodyPalace}
                   />
                 );
               })}
