@@ -1,6 +1,7 @@
 {
+  "/api/astrology/ziwei/route": "app/api/astrology/ziwei/route.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/astrology/ziwei/page": "app/astrology/ziwei/page.js",
   "/auth/signin/page": "app/auth/signin/page.js",
-  "/auth/signup/page": "app/auth/signup/page.js",
   "/page": "app/page.js"
 }

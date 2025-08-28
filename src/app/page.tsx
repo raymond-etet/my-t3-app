@@ -50,6 +50,13 @@ export default async function HomePage() {
                 <div className="text-lg">专业的加密货币合约计算工具</div>
               </a>
               <a
+                href="/astrology/ziwei"
+                className="flex max-w-xs flex-col gap-8 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 p-4 text-white hover:from-blue-600 hover:to-cyan-600"
+              >
+                <h3 className="text-2xl font-bold">🔮 紫微斗数排盘</h3>
+                <div className="text-lg">基于 iztro 2.5.3 的专业紫微排盘</div>
+              </a>
+              <a
                 href="/profile"
                 className="flex max-w-xs flex-col gap-8 rounded-xl bg-white/10 p-4 text-white hover:bg-white/20"
               >
@@ -73,6 +80,13 @@ export default async function HomePage() {
               >
                 <h3 className="text-2xl font-bold">📊 U本位合约计算器</h3>
                 <div className="text-lg">专业的加密货币合约计算工具</div>
+              </a>
+              <a
+                href="/astrology/ziwei"
+                className="flex max-w-xs flex-col gap-4 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-500 p-4 text-white hover:from-blue-600 hover:to-cyan-600"
+              >
+                <h3 className="text-2xl font-bold">🔮 紫微斗数排盘</h3>
+                <div className="text-lg">基于 iztro 2.5.3 的专业紫微排盘</div>
               </a>
             </div>
           </div>

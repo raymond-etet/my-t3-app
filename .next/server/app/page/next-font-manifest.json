@@ -1,7 +1,7 @@
 {
   "pages": {},
   "app": {
-    "[project]/src/app/page": [
+    "[project]/my-t3-app/src/app/page": [
       "static/media/Geist_Variable-s.p.f19e4721.woff2"
     ]
   },

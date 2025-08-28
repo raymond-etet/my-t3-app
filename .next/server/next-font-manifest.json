@@ -1,12 +1,12 @@
 {
   "app": {
-    "[project]/src/app/auth/signin/page": [
+    "[project]/my-t3-app/src/app/astrology/ziwei/page": [
       "static/media/Geist_Variable-s.p.f19e4721.woff2"
     ],
-    "[project]/src/app/auth/signup/page": [
+    "[project]/my-t3-app/src/app/auth/signin/page": [
       "static/media/Geist_Variable-s.p.f19e4721.woff2"
     ],
-    "[project]/src/app/page": [
+    "[project]/my-t3-app/src/app/page": [
       "static/media/Geist_Variable-s.p.f19e4721.woff2"
     ]
   },
