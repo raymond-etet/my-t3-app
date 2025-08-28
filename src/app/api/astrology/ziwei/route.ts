@@ -187,7 +187,20 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // 6. 构建返回数据
+    // 6. 处理宫位数据，确保正确标识身宫
+    const processedPalaces = chart.palaces.map((palace: any, index: number) => {
+      // 根据身宫地支确定身宫位置
+      const isBodyPalace =
+        palace.earthlyBranch === chart.earthlyBranchOfBodyPalace;
+
+      return {
+        ...palace,
+        index: index,
+        isBodyPalace: isBodyPalace,
+      };
+    });
+
+    // 7. 构建返回数据
     const responseData = {
       gender: genderText,
       solarDate: actualSolarDate,
@@ -202,7 +215,7 @@ export async function GET(request: NextRequest) {
       soul: chart.soul,
       body: chart.body,
       fiveElementsClass: chart.fiveElementsClass,
-      palaces: chart.palaces,
+      palaces: processedPalaces,
       isLunarInput,
       birthTimeIndex,
       originalInput: {

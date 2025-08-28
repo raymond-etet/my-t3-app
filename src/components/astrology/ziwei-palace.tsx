@@ -70,6 +70,7 @@ export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({ palace, index }) => {
       className={`ziwei-palace-card ${
         palace.isBodyPalace ? "ziwei-body-palace" : ""
       }`}
+      data-palace={index}
     >
       {/* 宫位标题区域 */}
       <div className="ziwei-palace-header">

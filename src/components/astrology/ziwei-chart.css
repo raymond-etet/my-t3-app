@@ -1,0 +1,159 @@
+/* 紫微斗数排盘样式 - 基于 react-iztro-main 的正确布局 */
+
+.ziwei-astrolabe {
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji,
+    Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+  display: grid;
+  position: relative;
+  width: 100%;
+  grid-gap: 3px;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 1fr;
+  grid-template-areas:
+    "g3 g4 g5 g6"
+    "g2 ct ct g7"
+    "g1 ct ct g8"
+    "g0 g11 g10 g9";
+  min-height: 600px;
+}
+
+/* 宫位样式 */
+.ziwei-palace-card {
+  border: 1px solid rgba(0, 21, 41, 0.07);
+  background: white;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 140px;
+}
+
+/* 12宫的网格定位 */
+.ziwei-palace-card[data-palace="0"] {
+  grid-area: g0;
+}
+.ziwei-palace-card[data-palace="1"] {
+  grid-area: g1;
+}
+.ziwei-palace-card[data-palace="2"] {
+  grid-area: g2;
+}
+.ziwei-palace-card[data-palace="3"] {
+  grid-area: g3;
+}
+.ziwei-palace-card[data-palace="4"] {
+  grid-area: g4;
+}
+.ziwei-palace-card[data-palace="5"] {
+  grid-area: g5;
+}
+.ziwei-palace-card[data-palace="6"] {
+  grid-area: g6;
+}
+.ziwei-palace-card[data-palace="7"] {
+  grid-area: g7;
+}
+.ziwei-palace-card[data-palace="8"] {
+  grid-area: g8;
+}
+.ziwei-palace-card[data-palace="9"] {
+  grid-area: g9;
+}
+.ziwei-palace-card[data-palace="10"] {
+  grid-area: g10;
+}
+.ziwei-palace-card[data-palace="11"] {
+  grid-area: g11;
+}
+
+/* 中心区域样式 - 占据4个格子 */
+.ziwei-center-area {
+  grid-area: ct;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 身宫标识 */
+.ziwei-body-palace {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+  background-color: rgba(59, 130, 246, 0.05);
+}
+
+/* 宫位头部 */
+.ziwei-palace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed rgba(0, 21, 41, 0.1);
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+}
+
+/* 星曜显示区域 */
+.ziwei-palace-stars {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ziwei-major-stars {
+  font-size: 13px;
+  font-weight: bold;
+  color: #531dab;
+}
+
+.ziwei-minor-stars {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+.ziwei-adjective-stars {
+  font-size: 12px;
+  color: #8c8c8c;
+}
+
+/* 星曜四化样式 */
+.ziwei-star-mutagen {
+  font-weight: normal;
+  font-size: 10px;
+  border-radius: 2px;
+  color: #fff;
+  display: inline-block;
+  margin-left: 2px;
+  padding: 1px 3px;
+}
+
+.ziwei-star-mutagen.lu {
+  background-color: #d4380d; /* 禄 - 红色 */
+}
+
+.ziwei-star-mutagen.quan {
+  background-color: #2f54eb; /* 权 - 蓝色 */
+}
+
+.ziwei-star-mutagen.ke {
+  background-color: #237804; /* 科 - 绿色 */
+}
+
+.ziwei-star-mutagen.ji {
+  background-color: #000; /* 忌 - 黑色 */
+}
+
+/* 宫位底部 */
+.ziwei-palace-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px dashed rgba(0, 21, 41, 0.1);
+  font-size: 13px;
+  font-weight: bold;
+  color: #237804;
+}
