@@ -237,46 +237,6 @@ export function ZiweiChart() {
           </div>
 
           {/* 基本信息显示 */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
-            <div>
-              <span className="text-sm text-gray-600">性别：</span>
-              <span className="font-medium">{chartData.gender}</span>
-            </div>
-            <div>
-              <span className="text-sm text-gray-600">公历：</span>
-              <span className="font-medium">{chartData.solarDate}</span>
-            </div>
-            <div>
-              <span className="text-sm text-gray-600">农历：</span>
-              <span className="font-medium">{chartData.lunarDate}</span>
-            </div>
-            <div>
-              <span className="text-sm text-gray-600">八字：</span>
-              <span className="font-medium">{chartData.chineseDate}</span>
-            </div>
-            <div>
-              <span className="text-sm text-gray-600">时辰：</span>
-              <span className="font-medium">
-                {chartData.time} ({chartData.timeRange})
-              </span>
-            </div>
-            <div>
-              <span className="text-sm text-gray-600">命宫：</span>
-              <span className="font-medium">
-                {chartData.earthlyBranchOfSoulPalace}
-              </span>
-            </div>
-            <div>
-              <span className="text-sm text-gray-600">身宫：</span>
-              <span className="font-medium">
-                {chartData.earthlyBranchOfBodyPalace}
-              </span>
-            </div>
-            <div>
-              <span className="text-sm text-gray-600">五行局：</span>
-              <span className="font-medium">{chartData.fiveElementsClass}</span>
-            </div>
-          </div>
 
           {/* 紫微斗数标准排盘显示 */}
           {viewMode === "grid" ? (
