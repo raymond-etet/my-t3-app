@@ -1,3 +1,96 @@
 {
-  "pages": {}
+  "pages": {
+    "/_not-found/page": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/chunks/app/_not-found/page-dd0ded37116214d1.js"
+    ],
+    "/api/astrology/ziwei/route": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/chunks/app/api/astrology/ziwei/route-bf083748da7a2b13.js"
+    ],
+    "/api/auth/register/route": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/chunks/app/api/auth/register/route-bf083748da7a2b13.js"
+    ],
+    "/layout": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/css/d0496af8ecf59ee2.css",
+      "static/chunks/428-c82b388a6d4e43ee.js",
+      "static/chunks/app/layout-e97e6581ce620847.js"
+    ],
+    "/api/auth/[...nextauth]/route": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/chunks/app/api/auth/[...nextauth]/route-bf083748da7a2b13.js"
+    ],
+    "/auth/signin/page": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/chunks/428-c82b388a6d4e43ee.js",
+      "static/chunks/app/auth/signin/page-2fe1b919b7e2d3b1.js"
+    ],
+    "/calculator/u-contract/page": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/chunks/428-c82b388a6d4e43ee.js",
+      "static/chunks/123-02cd6de926e73522.js",
+      "static/chunks/app/calculator/u-contract/page-57de754e9d016322.js"
+    ],
+    "/astrology/ziwei/page": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/css/b9b2c5600118d796.css",
+      "static/chunks/428-c82b388a6d4e43ee.js",
+      "static/chunks/123-02cd6de926e73522.js",
+      "static/chunks/app/astrology/ziwei/page-db441daa7539da3f.js"
+    ],
+    "/auth/signup/page": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/chunks/428-c82b388a6d4e43ee.js",
+      "static/chunks/app/auth/signup/page-3574d1d2ac94d379.js"
+    ],
+    "/profile/page": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/chunks/428-c82b388a6d4e43ee.js",
+      "static/chunks/123-02cd6de926e73522.js",
+      "static/chunks/828-fb51fb65d7eefcd8.js",
+      "static/chunks/app/profile/page-3500449b768db4ba.js"
+    ],
+    "/page": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/chunks/428-c82b388a6d4e43ee.js",
+      "static/chunks/123-02cd6de926e73522.js",
+      "static/chunks/828-fb51fb65d7eefcd8.js",
+      "static/chunks/app/page-3500449b768db4ba.js"
+    ]
+  }
 }
