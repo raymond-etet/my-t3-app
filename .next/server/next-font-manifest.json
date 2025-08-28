@@ -1,10 +1,6 @@
 {
-  "app": {
-    "[project]/my-t3-app/src/app/astrology/ziwei/page": [
-      "static/media/Geist_Variable-s.p.f19e4721.woff2"
-    ]
-  },
-  "appUsingSizeAdjust": true,
+  "app": {},
+  "appUsingSizeAdjust": false,
   "pages": {},
   "pagesUsingSizeAdjust": false
 }
