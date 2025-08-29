@@ -63,7 +63,7 @@ function getBranchIndex(branch: string): number {
 export const ZiweiTextChart: React.FC<ZiweiTextChartProps> = ({
   chartData,
 }) => {
-  const [chartType, setChartType] = useState<ChartType>("standard");
+  const [chartType, setChartType] = useState<ChartType>("sanhe");
 
   // 检查是否为扩展数据
   const isExtendedChart = (data: any): data is ExtendedIztroChart => {
@@ -77,36 +77,13 @@ export const ZiweiTextChart: React.FC<ZiweiTextChartProps> = ({
     switch (chartType) {
       case "flying":
         return renderFlyingPalaceContent(palace, index);
-      case "sanhe":
-        return renderSanhePalaceContent(palace, index);
       case "sihua":
         return renderSihuaPalaceContent(palace, index);
+      case "sanhe":
       default:
-        return renderStandardPalaceContent(palace);
+        return renderSanhePalaceContent(palace, index);
     }
   };
-
-  // 标准盘宫位内容
-  const renderStandardPalaceContent = (palace: Palace) => (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 text-sm">
-      <p>
-        <span className="font-semibold w-16 inline-block">主星:</span>{" "}
-        {formatStars(palace.majorStars)}
-      </p>
-      <p>
-        <span className="font-semibold w-16 inline-block">辅星/煞星:</span>{" "}
-        {formatStars(palace.minorStars)}
-      </p>
-      <p>
-        <span className="font-semibold w-16 inline-block">杂曜:</span>{" "}
-        {formatStars(palace.adjectiveStars)}
-      </p>
-      <p>
-        <span className="font-semibold w-16 inline-block">大限:</span>{" "}
-        {palace.decadal.range.join("-")} 岁
-      </p>
-    </div>
-  );
 
   // 飞星盘宫位内容
   const renderFlyingPalaceContent = (palace: Palace, index: number) => {
@@ -118,24 +95,81 @@ export const ZiweiTextChart: React.FC<ZiweiTextChartProps> = ({
     const sihuaStars = allStars.filter((star) => star.mutagen);
     const normalStars = allStars.filter((star) => !star.mutagen);
 
+    // 获取宫位名称
+    const palaceNames = [
+      "命宫",
+      "兄弟宫",
+      "夫妻宫",
+      "子女宫",
+      "财帛宫",
+      "疾厄宫",
+      "迁移宫",
+      "奴仆宫",
+      "事业宫",
+      "田宅宫",
+      "福德宫",
+      "父母宫",
+    ];
+
     return (
-      <div className="grid grid-cols-1 gap-x-4 text-sm">
-        <p>
-          <span className="font-semibold w-16 inline-block text-amber-700">
-            四化星:
-          </span>{" "}
-          {sihuaStars.length > 0 ? formatStars(sihuaStars) : "无"}
-        </p>
-        <p>
-          <span className="font-semibold w-16 inline-block">其他星:</span>{" "}
-          {normalStars.length > 0 ? formatStars(normalStars.slice(0, 3)) : "无"}
-          {normalStars.length > 3 && <span className="text-gray-500">...</span>}
-        </p>
+      <div className="grid grid-cols-1 gap-y-2 text-sm">
+        {sihuaStars.length > 0 ? (
+          <>
+            {sihuaStars.map((star, starIndex) => (
+              <p
+                key={starIndex}
+                className="bg-amber-50 p-2 rounded border-l-4 border-amber-400"
+              >
+                <span
+                  className={`font-semibold inline-block w-8 text-center rounded text-white text-xs mr-2 ${
+                    star.mutagen === "禄"
+                      ? "bg-red-500"
+                      : star.mutagen === "权"
+                      ? "bg-blue-500"
+                      : star.mutagen === "科"
+                      ? "bg-green-500"
+                      : "bg-gray-500"
+                  }`}
+                >
+                  {star.mutagen}
+                </span>
+                <span className="font-semibold text-amber-800">
+                  {star.name}
+                </span>
+                <span className="text-amber-600 ml-2">
+                  → 飞入{palaceNames[index]}
+                </span>
+                {star.brightness && (
+                  <span className="text-xs text-gray-600 ml-2">
+                    ({star.brightness})
+                  </span>
+                )}
+              </p>
+            ))}
+            {normalStars.length > 0 && (
+              <p className="text-gray-600 text-xs">
+                <span className="font-semibold">其他星:</span>{" "}
+                {formatStars(normalStars.slice(0, 2))}
+                {normalStars.length > 2 && <span>...</span>}
+              </p>
+            )}
+          </>
+        ) : (
+          <div className="text-gray-500 italic text-xs">
+            本宫无四化星曜
+            {normalStars.length > 0 && (
+              <p className="mt-1">
+                <span className="font-semibold">主要星曜:</span>{" "}
+                {formatStars(normalStars.slice(0, 3))}
+              </p>
+            )}
+          </div>
+        )}
       </div>
     );
   };
 
-  // 三合盘宫位内容
+  // 三合盘宫位内容（作为标准显示）
   const renderSanhePalaceContent = (palace: Palace, index: number) => {
     const soulIndex = getBranchIndex(
       chartData.earthlyBranchOfSoulPalace || "子"
@@ -148,16 +182,23 @@ export const ZiweiTextChart: React.FC<ZiweiTextChartProps> = ({
     ].includes(index);
 
     return (
-      <div className="grid grid-cols-1 gap-x-4 text-sm">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 text-sm">
         {isMainTriad && (
-          <p className="text-purple-600 font-medium mb-1">★ 命宫三方四正</p>
+          <p className="text-purple-600 font-medium mb-1 col-span-full">
+            ★ 命宫三方四正
+          </p>
         )}
         <p>
-          <span className="font-semibold w-16 inline-block">主要星曜:</span>{" "}
-          {formatStars([
-            ...palace.majorStars,
-            ...palace.minorStars.slice(0, 2),
-          ])}
+          <span className="font-semibold w-16 inline-block">主星:</span>{" "}
+          {formatStars(palace.majorStars)}
+        </p>
+        <p>
+          <span className="font-semibold w-16 inline-block">辅星/煞星:</span>{" "}
+          {formatStars(palace.minorStars)}
+        </p>
+        <p>
+          <span className="font-semibold w-16 inline-block">杂曜:</span>{" "}
+          {formatStars(palace.adjectiveStars)}
         </p>
         <p>
           <span className="font-semibold w-16 inline-block">大限:</span>{" "}
@@ -233,7 +274,8 @@ export const ZiweiTextChart: React.FC<ZiweiTextChartProps> = ({
               ✨ 飞星盘说明：
             </span>
             <span className="text-amber-700">
-              重点显示四化星曜的分布情况，其他星曜简化显示
+              专门显示四化星曜的飞化关系。四化星会以特殊颜色标注，并显示"飞入"的宫位信息。
+              化禄(红)、化权(蓝)、化科(绿)、化忌(灰)分别代表不同的能量转化。
             </span>
           </div>
         );
@@ -259,11 +301,16 @@ export const ZiweiTextChart: React.FC<ZiweiTextChartProps> = ({
             </span>
           </div>
         );
+      case "sanhe":
       default:
         return (
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm">
-            <span className="font-semibold text-blue-800">📊 标准盘说明：</span>
-            <span className="text-blue-700">完整显示所有星曜和宫位信息</span>
+          <div className="mb-4 p-3 bg-purple-50 border border-purple-200 rounded-lg text-sm">
+            <span className="font-semibold text-purple-800">
+              🔮 三合盘说明：
+            </span>
+            <span className="text-purple-700">
+              突出显示命宫三方四正的宫位组合和呼应关系，完整显示所有星曜信息
+            </span>
           </div>
         );
     }
@@ -277,14 +324,14 @@ export const ZiweiTextChart: React.FC<ZiweiTextChartProps> = ({
           <h3 className="text-xl font-bold">文字排盘结果</h3>
           <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
             <button
-              onClick={() => setChartType("standard")}
+              onClick={() => setChartType("sanhe")}
               className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                chartType === "standard"
-                  ? "bg-blue-600 text-white"
+                chartType === "sanhe"
+                  ? "bg-purple-600 text-white"
                   : "text-gray-600 hover:text-gray-800"
               }`}
             >
-              标准盘
+              三合盘
             </button>
             <button
               onClick={() => setChartType("flying")}
@@ -295,16 +342,6 @@ export const ZiweiTextChart: React.FC<ZiweiTextChartProps> = ({
               }`}
             >
               飞星盘
-            </button>
-            <button
-              onClick={() => setChartType("sanhe")}
-              className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                chartType === "sanhe"
-                  ? "bg-purple-600 text-white"
-                  : "text-gray-600 hover:text-gray-800"
-              }`}
-            >
-              三合盘
             </button>
             <button
               onClick={() => setChartType("sihua")}

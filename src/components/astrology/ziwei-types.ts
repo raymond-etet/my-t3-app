@@ -63,7 +63,7 @@ export interface IztroChart {
 }
 
 // 排盘类型枚举
-export type ChartType = "standard" | "flying" | "sanhe" | "sihua";
+export type ChartType = "sanhe" | "flying" | "sihua";
 
 // 飞星盘特殊数据结构
 export interface FlyingStarData {

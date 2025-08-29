@@ -1,42 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import type { IztroChart, ChartType, ExtendedIztroChart } from "./ziwei-types";
+import type { ChartType, ExtendedIztroChart } from "./ziwei-types";
 import { ZiweiPalace } from "./ziwei-palace";
 import { ZiweiTextChart } from "./ziwei-text-chart";
-import { ZiweiFlyingChart } from "./ziwei-flying-chart";
-import { ZiweiSanheChart } from "./ziwei-sanhe-chart";
-import { ZiweiSihuaChart } from "./ziwei-sihua-chart";
+
 import { ZiweiSanheLines } from "./ziwei-sanhe-lines";
 import "./ziwei-chart.css";
-
-// 标准紫微斗数十二宫布局映射
-// 按照传统排盘顺序：巳午未申，辰-中-酉，卯寅丑子
-const PALACE_LAYOUT_MAP = {
-  // 第一行：巳(4) 午(5) 未(6) 申(7)
-  0: 4, // 第1个位置对应巳宫(index 4)
-  1: 5, // 第2个位置对应午宫(index 5)
-  2: 6, // 第3个位置对应未宫(index 6)
-  3: 7, // 第4个位置对应申宫(index 7)
-
-  // 第二行：辰(3) 中心 中心 酉(8)
-  4: 3, // 第5个位置对应辰宫(index 3)
-  5: -1, // 中心区域
-  6: -1, // 中心区域
-  7: 8, // 第8个位置对应酉宫(index 8)
-
-  // 第三行：卯(2) 中心 中心 戌(9)
-  8: 2, // 第9个位置对应卯宫(index 2)
-  9: -1, // 中心区域
-  10: -1, // 中心区域
-  11: 9, // 第12个位置对应戌宫(index 9)
-
-  // 第四行：寅(1) 丑(0) 子(11) 亥(10)
-  12: 1, // 第13个位置对应寅宫(index 1)
-  13: 0, // 第14个位置对应丑宫(index 0)
-  14: 11, // 第15个位置对应子宫(index 11)
-  15: 10, // 第16个位置对应亥宫(index 10)
-};
 
 export function ZiweiChart() {
   const [birthDate, setBirthDate] = useState<string>("2025-01-29");
@@ -47,7 +17,7 @@ export function ZiweiChart() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "text">("grid");
-  const [chartType, setChartType] = useState<ChartType>("standard");
+  const [chartType, setChartType] = useState<ChartType>("sanhe");
   const [showSanheLines, setShowSanheLines] = useState<boolean>(false);
 
   const handleSubmit = async () => {
@@ -92,10 +62,10 @@ export function ZiweiChart() {
         body: data.body,
         fiveElementsClass: data.fiveElementsClass,
         palaces: data.palaces,
-        chartType: "standard", // 默认为标准盘
-        // 三种新排盘的数据处理将在后续实现
+        chartType: "sanhe", // 默认为三合盘
+        // 生成飞星盘、三合盘、四化盘数据
         flyingStars: generateFlyingStarData(data.palaces),
-        sanheGroups: generateSanheGroups(data.earthlyBranchOfSoulPalace),
+        sanheGroups: generateSanheGroups(),
         sihuaDisplay: generateSihuaDisplay(data.palaces),
       };
 
@@ -252,14 +222,14 @@ export function ZiweiChart() {
             {viewMode === "grid" && (
               <div className="flex space-x-2 border-b border-gray-200">
                 <button
-                  onClick={() => setChartType("standard")}
+                  onClick={() => setChartType("sanhe")}
                   className={`px-4 py-2 font-medium ${
-                    chartType === "standard"
+                    chartType === "sanhe"
                       ? "text-blue-600 border-b-2 border-blue-600"
                       : "text-gray-500 hover:text-gray-700"
                   }`}
                 >
-                  标准盘
+                  三合盘
                 </button>
                 <button
                   onClick={() => setChartType("flying")}
@@ -270,16 +240,6 @@ export function ZiweiChart() {
                   }`}
                 >
                   飞星盘
-                </button>
-                <button
-                  onClick={() => setChartType("sanhe")}
-                  className={`px-4 py-2 font-medium ${
-                    chartType === "sanhe"
-                      ? "text-blue-600 border-b-2 border-blue-600"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  三合盘
                 </button>
                 <button
                   onClick={() => setChartType("sihua")}
@@ -300,7 +260,7 @@ export function ZiweiChart() {
           {/* 根据选择的排盘类型和显示模式渲染内容 */}
           {viewMode === "grid" ? (
             <>
-              {chartType === "standard" && (
+              {chartType === "sanhe" && (
                 <div
                   className={`ziwei-astrolabe ${getChartTypeClass(chartType)} ${
                     showSanheLines ? "show-sanhe-lines" : ""
@@ -452,15 +412,178 @@ export function ZiweiChart() {
               )}
 
               {chartType === "flying" && (
-                <ZiweiFlyingChart chartData={chartData} />
-              )}
+                <div
+                  className={`ziwei-astrolabe ${getChartTypeClass(
+                    chartType
+                  )} flying-star-mode`}
+                >
+                  {/* 飞星盘：突出显示四化星和飞化关系 */}
+                  {Array.from({ length: 12 }, (_, palaceIndex) => {
+                    const palace = chartData.palaces[palaceIndex];
+                    if (!palace) return null;
 
-              {chartType === "sanhe" && (
-                <ZiweiSanheChart chartData={chartData} />
+                    return (
+                      <ZiweiPalace
+                        key={`palace-${palaceIndex}`}
+                        palace={palace}
+                        index={palaceIndex}
+                        soulPalaceBranch={chartData.earthlyBranchOfSoulPalace}
+                        bodyPalaceBranch={chartData.earthlyBranchOfBodyPalace}
+                        chartType={chartType}
+                        extendedData={chartData}
+                      />
+                    );
+                  })}
+
+                  {/* 飞星连线和箭头 */}
+                  <div className="flying-star-connections">
+                    {chartData.flyingStars?.map((flyingStar, index) => {
+                      // 简单的飞星连线显示
+                      return (
+                        <div
+                          key={`flying-${index}`}
+                          className="flying-star-indicator"
+                          style={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            zIndex: 10,
+                            pointerEvents: "none",
+                          }}
+                        >
+                          <div
+                            className={`flying-star-badge ${flyingStar.mutagen}`}
+                          >
+                            {flyingStar.starName}
+                            {flyingStar.mutagen}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* 中心区域显示四化信息 */}
+                  <div className="ziwei-center-area">
+                    <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-6 text-center rounded-lg border border-amber-200 w-full h-full flex flex-col justify-center">
+                      <div className="text-lg font-bold text-amber-800 mb-4">
+                        四化飞星
+                      </div>
+                      <div className="grid grid-cols-2 gap-y-2 gap-x-4 text-sm">
+                        <div className="text-left">
+                          <span className="font-semibold text-red-600 block">
+                            化禄:
+                          </span>
+                          <span className="text-gray-700 text-xs">
+                            {chartData.sihuaDisplay?.lu
+                              .map((s) => s.name)
+                              .join(", ") || "无"}
+                          </span>
+                        </div>
+                        <div className="text-left">
+                          <span className="font-semibold text-blue-600 block">
+                            化权:
+                          </span>
+                          <span className="text-gray-700 text-xs">
+                            {chartData.sihuaDisplay?.quan
+                              .map((s) => s.name)
+                              .join(", ") || "无"}
+                          </span>
+                        </div>
+                        <div className="text-left">
+                          <span className="font-semibold text-green-600 block">
+                            化科:
+                          </span>
+                          <span className="text-gray-700 text-xs">
+                            {chartData.sihuaDisplay?.ke
+                              .map((s) => s.name)
+                              .join(", ") || "无"}
+                          </span>
+                        </div>
+                        <div className="text-left">
+                          <span className="font-semibold text-gray-600 block">
+                            化忌:
+                          </span>
+                          <span className="text-gray-700 text-xs">
+                            {chartData.sihuaDisplay?.ji
+                              .map((s) => s.name)
+                              .join(", ") || "无"}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="mt-3 text-xs text-amber-700">
+                        💫 四化星在各宫位中以特殊颜色标注
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
 
               {chartType === "sihua" && (
-                <ZiweiSihuaChart chartData={chartData} />
+                <div
+                  className={`ziwei-astrolabe ${getChartTypeClass(chartType)}`}
+                >
+                  {/* 四化盘：专门显示四化星的分布和影响 */}
+                  {Array.from({ length: 12 }, (_, palaceIndex) => {
+                    const palace = chartData.palaces[palaceIndex];
+                    if (!palace) return null;
+
+                    return (
+                      <ZiweiPalace
+                        key={`palace-${palaceIndex}`}
+                        palace={palace}
+                        index={palaceIndex}
+                        soulPalaceBranch={chartData.earthlyBranchOfSoulPalace}
+                        bodyPalaceBranch={chartData.earthlyBranchOfBodyPalace}
+                        chartType={chartType}
+                        extendedData={chartData}
+                      />
+                    );
+                  })}
+
+                  {/* 中心区域显示四化统计 */}
+                  <div className="ziwei-center-area">
+                    <div className="bg-gradient-to-br from-purple-50 to-indigo-50 p-6 text-center rounded-lg border border-purple-200 w-full h-full flex flex-col justify-center">
+                      <div className="text-lg font-bold text-purple-800 mb-4">
+                        四化统计
+                      </div>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span className="font-semibold text-red-600">
+                            化禄:
+                          </span>
+                          <span className="text-gray-700">
+                            {chartData.sihuaDisplay?.lu.length || 0}颗
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-semibold text-blue-600">
+                            化权:
+                          </span>
+                          <span className="text-gray-700">
+                            {chartData.sihuaDisplay?.quan.length || 0}颗
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-semibold text-green-600">
+                            化科:
+                          </span>
+                          <span className="text-gray-700">
+                            {chartData.sihuaDisplay?.ke.length || 0}颗
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="font-semibold text-gray-600">
+                            化忌:
+                          </span>
+                          <span className="text-gray-700">
+                            {chartData.sihuaDisplay?.ji.length || 0}颗
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               )}
             </>
           ) : (
@@ -477,12 +600,11 @@ function getChartTypeClass(chartType: ChartType): string {
   switch (chartType) {
     case "flying":
       return "ziwei-flying-chart";
-    case "sanhe":
-      return "ziwei-sanhe-chart";
     case "sihua":
       return "ziwei-sihua-chart";
+    case "sanhe":
     default:
-      return "ziwei-standard-chart";
+      return "ziwei-sanhe-chart";
   }
 }
 
@@ -511,23 +633,8 @@ function generateFlyingStarData(palaces: any[]): any[] {
   return flyingStars;
 }
 
-// 辅助函数：根据命宫地支找到对应的宫位索引
-function findSoulPalaceIndex(chartData: ExtendedIztroChart): number {
-  // 直接从宫位数据中找到命宫
-  for (let i = 0; i < chartData.palaces.length; i++) {
-    const palace = chartData.palaces[i];
-    if (
-      palace &&
-      palace.earthlyBranch === chartData.earthlyBranchOfSoulPalace
-    ) {
-      return i;
-    }
-  }
-  return 0; // 默认返回0
-}
-
 // 临时辅助函数：生成三合盘数据
-function generateSanheGroups(soulPalaceBranch: string): any[] {
+function generateSanheGroups(): any[] {
   // 这个函数现在只是占位，实际的命宫索引会在组件中重新计算
   return [
     {
