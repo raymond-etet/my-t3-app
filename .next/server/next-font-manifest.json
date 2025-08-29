@@ -2,6 +2,9 @@
   "app": {
     "[project]/src/app/astrology/ziwei/page": [
       "static/media/Geist_Variable-s.p.f19e4721.woff2"
+    ],
+    "[project]/src/app/page": [
+      "static/media/Geist_Variable-s.p.f19e4721.woff2"
     ]
   },
   "appUsingSizeAdjust": true,

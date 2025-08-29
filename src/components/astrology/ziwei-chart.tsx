@@ -246,49 +246,51 @@ export function ZiweiChart() {
               </div>
             </div>
 
-            {/* 排盘类型选项卡 */}
-            <div className="flex space-x-2 border-b border-gray-200">
-              <button
-                onClick={() => setChartType("standard")}
-                className={`px-4 py-2 font-medium ${
-                  chartType === "standard"
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                标准盘
-              </button>
-              <button
-                onClick={() => setChartType("flying")}
-                className={`px-4 py-2 font-medium ${
-                  chartType === "flying"
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                飞星盘
-              </button>
-              <button
-                onClick={() => setChartType("sanhe")}
-                className={`px-4 py-2 font-medium ${
-                  chartType === "sanhe"
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                三合盘
-              </button>
-              <button
-                onClick={() => setChartType("sihua")}
-                className={`px-4 py-2 font-medium ${
-                  chartType === "sihua"
-                    ? "text-blue-600 border-b-2 border-blue-600"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                四化盘
-              </button>
-            </div>
+            {/* 排盘类型选项卡 - 只在图形排盘模式下显示 */}
+            {viewMode === "grid" && (
+              <div className="flex space-x-2 border-b border-gray-200">
+                <button
+                  onClick={() => setChartType("standard")}
+                  className={`px-4 py-2 font-medium ${
+                    chartType === "standard"
+                      ? "text-blue-600 border-b-2 border-blue-600"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  标准盘
+                </button>
+                <button
+                  onClick={() => setChartType("flying")}
+                  className={`px-4 py-2 font-medium ${
+                    chartType === "flying"
+                      ? "text-blue-600 border-b-2 border-blue-600"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  飞星盘
+                </button>
+                <button
+                  onClick={() => setChartType("sanhe")}
+                  className={`px-4 py-2 font-medium ${
+                    chartType === "sanhe"
+                      ? "text-blue-600 border-b-2 border-blue-600"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  三合盘
+                </button>
+                <button
+                  onClick={() => setChartType("sihua")}
+                  className={`px-4 py-2 font-medium ${
+                    chartType === "sihua"
+                      ? "text-blue-600 border-b-2 border-blue-600"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  四化盘
+                </button>
+              </div>
+            )}
           </div>
 
           {/* 基本信息显示 */}
@@ -441,7 +443,7 @@ export function ZiweiChart() {
               )}
             </>
           ) : (
-            <ZiweiTextChart chartData={chartData as IztroChart} />
+            <ZiweiTextChart chartData={chartData} />
           )}
         </div>
       )}
