@@ -30,200 +30,695 @@ export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({
   // 判断当前宫位是否为身宫
   const isBodyPalace = palace.earthlyBranch === bodyPalaceBranch;
 
-  // 获取星曜亮度对应的CSS类
-  const getBrightnessClass = (brightness?: string): string => {
-    if (!brightness) return "star-brightness-neutral";
-
-    switch (brightness) {
-      case "庙":
-        return "star-brightness-temple";
-      case "旺":
-        return "star-brightness-prosperous";
-      case "得":
-      case "利":
-        return "star-brightness-favorable";
-      case "平":
-        return "star-brightness-neutral";
-      case "陷":
-      case "不":
-        return "star-brightness-weak";
-      default:
-        return "star-brightness-neutral";
-    }
-  };
-
-  // 获取星曜类型对应的CSS类（根据星曜名称判断好坏）
-  const getStarTypeClass = (starName: string): string => {
-    // 吉星
-    const goodStars = [
-      "紫微",
-      "天府",
-      "太阳",
-      "太阴",
-      "天机",
-      "天同",
-      "天相",
-      "天梁",
-      "文昌",
-      "文曲",
-      "左辅",
-      "右弼",
-      "天魁",
-      "天钺",
-      "禄存",
-      "天马",
-      "三台",
-      "八座",
-      "恩光",
-      "天贵",
-      "台辅",
-      "封诰",
-      "天官",
-      "天福",
-      "凤阁",
-      "龙池",
-    ];
-
-    // 煞星
-    const badStars = [
-      "擎羊",
-      "陀罗",
-      "火星",
-      "铃星",
-      "地空",
-      "地劫",
-      "天刑",
-      "天姚",
-      "阴煞",
-      "天哭",
-      "天虚",
-      "大耗",
-      "小耗",
-      "破碎",
-      "蜚廉",
-      "病符",
-      "丧门",
-      "贯索",
-      "官符",
-      "五鬼",
-      "死符",
-      "岁破",
-      "龙德",
-      "白虎",
-      "天德",
-      "吊客",
-      "灾煞",
-    ];
-
-    if (goodStars.includes(starName)) {
-      return "star-type-good";
-    } else if (badStars.includes(starName)) {
-      return "star-type-bad";
-    }
-    return "star-type-neutral";
-  };
-
-  // 渲染星曜的辅助函数，增强四化显示和颜色区分
-  const renderStars = (stars: Palace["majorStars"], className: string = "") => {
-    if (!stars || stars.length === 0) {
-      return <span className="text-gray-400 text-xs">无</span>;
-    }
-
-    return (
-      <div className={`flex flex-wrap gap-1 ${className}`}>
-        {stars.map((star, idx) => (
-          <span
-            key={`${star.name}-${idx}`}
-            className="inline-flex items-center"
-          >
-            <span
-              className={`star-name ${getBrightnessClass(
-                star.brightness
-              )} ${getStarTypeClass(star.name)}`}
-            >
-              {star.name}
-              {star.brightness && (
-                <span className="text-xs ml-0.5">{star.brightness}</span>
-              )}
-            </span>
-            {star.mutagen && (
-              <span
-                className={`ziwei-star-mutagen ${getMutagenClass(
-                  star.mutagen
-                )}`}
-              >
-                {star.mutagen}
-              </span>
-            )}
-          </span>
-        ))}
-      </div>
-    );
-  };
-
-  // 渲染主星曜的辅助函数，带背景色
-  const renderStarsWithBackground = (
-    stars: Palace["majorStars"],
-    className: string = ""
-  ) => {
-    if (!stars || stars.length === 0) {
-      return <span className="text-gray-400 text-xs">无</span>;
-    }
-
-    return (
-      <div className={`flex flex-wrap gap-1 ${className}`}>
-        {stars.map((star, idx) => (
-          <span
-            key={`${star.name}-${idx}`}
-            className="inline-flex items-center"
-          >
-            <span
-              className={`star-name px-2 py-1 rounded text-white font-bold text-sm ${
-                star.brightness === "庙"
-                  ? "bg-red-600"
-                  : star.brightness === "旺"
-                  ? "bg-orange-500"
-                  : star.brightness === "得" || star.brightness === "利"
-                  ? "bg-green-500"
-                  : star.brightness === "陷" || star.brightness === "不"
-                  ? "bg-gray-400"
-                  : "bg-blue-500"
-              }`}
-            >
-              {star.name}
-              {star.brightness && (
-                <span className="text-xs ml-1">{star.brightness}</span>
-              )}
-            </span>
-            {star.mutagen && (
-              <span
-                className={`ziwei-star-mutagen ${getMutagenClass(
-                  star.mutagen
-                )}`}
-              >
-                {star.mutagen}
-              </span>
-            )}
-          </span>
-        ))}
-      </div>
-    );
-  };
-
   // 获取四化样式类名的辅助函数
   const getMutagenClass = (mutagen: string): string => {
     switch (mutagen) {
       case "禄":
-        return "lu";
+        return "bg-yellow-500 text-white text-xs px-1 py-0.5 rounded font-bold";
       case "权":
-        return "quan";
+        return "bg-red-500 text-white text-xs px-1 py-0.5 rounded font-bold";
       case "科":
-        return "ke";
+        return "bg-green-500 text-white text-xs px-1 py-0.5 rounded font-bold";
       case "忌":
-        return "ji";
+        return "bg-gray-600 text-white text-xs px-1 py-0.5 rounded font-bold";
       default:
         return "";
     }
+  };
+
+  // 根据权威亮度对照表推算星曜亮度
+  const inferStarBrightness = (
+    starName: string,
+    earthlyBranch: string
+  ): string => {
+    // 地支索引映射：子丑寅卯辰巳午未申酉戌亥
+    const branchIndex: { [key: string]: number } = {
+      子: 0,
+      丑: 1,
+      寅: 2,
+      卯: 3,
+      辰: 4,
+      巳: 5,
+      午: 6,
+      未: 7,
+      申: 8,
+      酉: 9,
+      戌: 10,
+      亥: 11,
+    };
+
+    const idx = branchIndex[earthlyBranch];
+    if (idx === undefined) return "";
+
+    // 根据权威亮度对照表进行精确匹配
+    const brightnessTable: { [key: string]: string[] } = {
+      // 十四主星
+      紫微: [
+        "平",
+        "庙",
+        "得",
+        "利",
+        "旺",
+        "庙",
+        "旺",
+        "庙",
+        "得",
+        "利",
+        "旺",
+        "平",
+      ],
+      天机: [
+        "庙",
+        "陷",
+        "旺",
+        "庙",
+        "陷",
+        "旺",
+        "庙",
+        "陷",
+        "旺",
+        "庙",
+        "陷",
+        "旺",
+      ],
+      太阳: [
+        "陷",
+        "陷",
+        "庙",
+        "庙",
+        "旺",
+        "旺",
+        "庙",
+        "得",
+        "得",
+        "平",
+        "戌",
+        "陷",
+      ],
+      武曲: [
+        "庙",
+        "庙",
+        "得",
+        "利",
+        "庙",
+        "得",
+        "庙",
+        "庙",
+        "得",
+        "利",
+        "庙",
+        "得",
+      ],
+      天同: [
+        "旺",
+        "陷",
+        "平",
+        "旺",
+        "陷",
+        "庙",
+        "陷",
+        "陷",
+        "得",
+        "旺",
+        "陷",
+        "庙",
+      ],
+      廉贞: [
+        "平",
+        "利",
+        "庙",
+        "陷",
+        "利",
+        "平",
+        "旺",
+        "利",
+        "庙",
+        "陷",
+        "利",
+        "平",
+      ],
+      天府: [
+        "庙",
+        "庙",
+        "庙",
+        "得",
+        "庙",
+        "得",
+        "庙",
+        "庙",
+        "庙",
+        "得",
+        "庙",
+        "得",
+      ],
+      太阴: [
+        "庙",
+        "旺",
+        "陷",
+        "陷",
+        "陷",
+        "陷",
+        "陷",
+        "陷",
+        "得",
+        "旺",
+        "庙",
+        "庙",
+      ],
+      贪狼: [
+        "旺",
+        "庙",
+        "平",
+        "陷",
+        "庙",
+        "陷",
+        "旺",
+        "庙",
+        "平",
+        "陷",
+        "庙",
+        "陷",
+      ],
+      巨门: [
+        "旺",
+        "陷",
+        "庙",
+        "庙",
+        "陷",
+        "旺",
+        "旺",
+        "陷",
+        "庙",
+        "庙",
+        "陷",
+        "旺",
+      ],
+      天相: [
+        "庙",
+        "庙",
+        "陷",
+        "庙",
+        "得",
+        "庙",
+        "庙",
+        "庙",
+        "陷",
+        "庙",
+        "得",
+        "亥",
+      ],
+      天梁: [
+        "庙",
+        "庙",
+        "陷",
+        "陷",
+        "庙",
+        "陷",
+        "旺",
+        "庙",
+        "陷",
+        "陷",
+        "庙",
+        "庙",
+      ],
+      七杀: [
+        "庙",
+        "旺",
+        "庙",
+        "旺",
+        "庙",
+        "平",
+        "旺",
+        "旺",
+        "庙",
+        "旺",
+        "庙",
+        "平",
+      ],
+      破军: [
+        "庙",
+        "旺",
+        "得",
+        "陷",
+        "庙",
+        "旺",
+        "旺",
+        "旺",
+        "得",
+        "陷",
+        "庙",
+        "旺",
+      ],
+
+      // 六吉星
+      文昌: [
+        "平",
+        "庙",
+        "陷",
+        "得",
+        "利",
+        "庙",
+        "陷",
+        "得",
+        "利",
+        "庙",
+        "陷",
+        "旺",
+      ],
+      文曲: [
+        "旺",
+        "庙",
+        "陷",
+        "利",
+        "得",
+        "庙",
+        "陷",
+        "得",
+        "旺",
+        "庙",
+        "陷",
+        "旺",
+      ],
+      左辅: [
+        "得",
+        "庙",
+        "得",
+        "得",
+        "庙",
+        "平",
+        "旺",
+        "庙",
+        "得",
+        "得",
+        "庙",
+        "平",
+      ],
+      右弼: [
+        "得",
+        "庙",
+        "得",
+        "得",
+        "庙",
+        "平",
+        "旺",
+        "庙",
+        "得",
+        "得",
+        "庙",
+        "平",
+      ],
+      天魁: [
+        "旺",
+        "庙",
+        "旺",
+        "庙",
+        "庙",
+        "旺",
+        "庙",
+        "庙",
+        "旺",
+        "庙",
+        "庙",
+        "旺",
+      ],
+      天钺: [
+        "旺",
+        "庙",
+        "旺",
+        "庙",
+        "庙",
+        "旺",
+        "庙",
+        "庙",
+        "旺",
+        "庙",
+        "庙",
+        "旺",
+      ],
+
+      // 禄马
+      禄存: [
+        "旺",
+        "得",
+        "庙",
+        "庙",
+        "得",
+        "旺",
+        "旺",
+        "得",
+        "庙",
+        "庙",
+        "得",
+        "旺",
+      ],
+      天马: [
+        "陷",
+        "陷",
+        "旺",
+        "陷",
+        "陷",
+        "庙",
+        "陷",
+        "陷",
+        "旺",
+        "陷",
+        "陷",
+        "庙",
+      ],
+
+      // 六煞星
+      擎羊: [
+        "陷",
+        "庙",
+        "平",
+        "陷",
+        "庙",
+        "平",
+        "陷",
+        "庙",
+        "平",
+        "陷",
+        "庙",
+        "平",
+      ],
+      陀罗: [
+        "陷",
+        "庙",
+        "平",
+        "陷",
+        "庙",
+        "平",
+        "陷",
+        "庙",
+        "平",
+        "陷",
+        "庙",
+        "平",
+      ],
+      火星: [
+        "得",
+        "陷",
+        "庙",
+        "旺",
+        "得",
+        "利",
+        "庙",
+        "陷",
+        "旺",
+        "陷",
+        "庙",
+        "陷",
+      ],
+      铃星: [
+        "得",
+        "陷",
+        "庙",
+        "旺",
+        "得",
+        "利",
+        "庙",
+        "陷",
+        "旺",
+        "陷",
+        "庙",
+        "陷",
+      ],
+      地空: [
+        "陷",
+        "陷",
+        "得",
+        "陷",
+        "陷",
+        "旺",
+        "陷",
+        "陷",
+        "得",
+        "陷",
+        "陷",
+        "旺",
+      ],
+      地劫: [
+        "陷",
+        "陷",
+        "得",
+        "陷",
+        "陷",
+        "旺",
+        "陷",
+        "陷",
+        "得",
+        "陷",
+        "陷",
+        "旺",
+      ],
+
+      // 桃花星
+      天姚: [
+        "旺",
+        "庙",
+        "陷",
+        "庙",
+        "旺",
+        "陷",
+        "平",
+        "庙",
+        "陷",
+        "庙",
+        "旺",
+        "庙",
+      ],
+      天刑: [
+        "平",
+        "平",
+        "庙",
+        "庙",
+        "平",
+        "平",
+        "平",
+        "平",
+        "庙",
+        "庙",
+        "平",
+        "平",
+      ],
+      红鸾: [
+        "陷",
+        "平",
+        "庙",
+        "旺",
+        "平",
+        "平",
+        "陷",
+        "平",
+        "庙",
+        "旺",
+        "平",
+        "平",
+      ],
+      天喜: [
+        "旺",
+        "平",
+        "平",
+        "陷",
+        "平",
+        "平",
+        "旺",
+        "平",
+        "陷",
+        "陷",
+        "平",
+        "平",
+      ],
+      华盖: [
+        "平",
+        "旺",
+        "平",
+        "平",
+        "旺",
+        "平",
+        "平",
+        "旺",
+        "平",
+        "平",
+        "旺",
+        "平",
+      ],
+    };
+
+    // 查找星曜亮度
+    if (brightnessTable[starName]) {
+      return brightnessTable[starName][idx] || "";
+    }
+
+    // 无亮度评级的星曜返回空字符串
+    // 根据对照表，以下星曜无亮度评级：
+    const noRatingStars = [
+      "天伤",
+      "天使",
+      "天德",
+      "月德",
+      "龙德",
+      "天官",
+      "天福",
+      "天厨",
+      "天巫",
+      "天月",
+      "台辅",
+      "封诰",
+      "三台",
+      "八座",
+      "恩光",
+      "天贵",
+      "龙池",
+      "凤阁",
+      "解神",
+      "阴煞",
+      "孤辰",
+      "寡宿",
+      "蜚廉",
+      "破碎",
+      "咸池",
+      "天空",
+      "天才",
+      "天寿",
+      "截空",
+      "旬空",
+      "博士",
+      "力士",
+      "青龙",
+      "小耗",
+      "将军",
+      "奏书",
+      "飞廉",
+      "喜神",
+      "病符",
+      "大耗",
+      "伏兵",
+      "官府",
+      "长生",
+      "沐浴",
+      "冠带",
+      "临官",
+      "帝旺",
+      "衰",
+      "病",
+      "死",
+      "墓",
+      "绝",
+      "胎",
+      "养",
+      "年解",
+      "月解",
+    ];
+
+    if (noRatingStars.includes(starName)) {
+      return "";
+    }
+
+    return ""; // 其他未知星曜
+  };
+
+  // 根据星曜类型渲染不同样式的星曜
+  const renderStarsByType = (stars: Palace["majorStars"], starType: string) => {
+    if (!stars || stars.length === 0) {
+      return null;
+    }
+
+    // 根据星曜类型过滤
+    const filteredStars = stars.filter((star) => {
+      switch (starType) {
+        case "major":
+          return star.type === "major";
+        case "soft":
+          return star.type === "soft";
+        case "tough":
+          return star.type === "tough";
+        case "adjective":
+          return star.type === "adjective";
+        case "flower":
+          return star.type === "flower";
+        case "helper":
+          return star.type === "helper";
+        case "lucun":
+          return star.type === "lucun";
+        case "tianma":
+          return star.type === "tianma";
+        default:
+          return false;
+      }
+    });
+
+    if (filteredStars.length === 0) {
+      return null;
+    }
+
+    const getTypeStyles = (type: string) => {
+      switch (type) {
+        case "major":
+          return "bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold text-sm px-2 py-1 rounded shadow-md";
+        case "soft":
+          return "bg-gradient-to-r from-green-500 to-emerald-500 text-white font-medium text-xs px-1.5 py-0.5 rounded";
+        case "tough":
+          return "bg-gradient-to-r from-red-500 to-orange-500 text-white font-medium text-xs px-1.5 py-0.5 rounded";
+        case "adjective":
+          return "bg-gradient-to-r from-gray-400 to-gray-500 text-white text-xs px-1 py-0.5 rounded";
+        case "flower":
+          return "bg-gradient-to-r from-pink-400 to-rose-400 text-white text-xs px-1 py-0.5 rounded";
+        case "helper":
+          return "bg-gradient-to-r from-cyan-400 to-blue-400 text-white text-xs px-1 py-0.5 rounded";
+        case "lucun":
+          return "bg-gradient-to-r from-yellow-500 to-amber-500 text-white font-medium text-xs px-1.5 py-0.5 rounded";
+        case "tianma":
+          return "bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium text-xs px-1.5 py-0.5 rounded";
+        default:
+          return "bg-gray-300 text-gray-700 text-xs px-1 py-0.5 rounded";
+      }
+    };
+
+    return (
+      <div className="flex flex-wrap gap-1 mb-1">
+        {filteredStars.map((star, idx) => {
+          // 获取星曜亮度，如果没有则推算
+          const brightness =
+            star.brightness ||
+            inferStarBrightness(star.name, palace.earthlyBranch);
+
+          return (
+            <span
+              key={`${star.name}-${idx}`}
+              className="inline-flex items-center"
+            >
+              <span className={getTypeStyles(starType)}>
+                {star.name}
+                {brightness && (
+                  <span className="text-xs ml-1 opacity-90">{brightness}</span>
+                )}
+              </span>
+              {star.mutagen && (
+                <span
+                  className={`ziwei-star-mutagen ${getMutagenClass(
+                    star.mutagen
+                  )} ml-1`}
+                >
+                  {star.mutagen}
+                </span>
+              )}
+            </span>
+          );
+        })}
+      </div>
+    );
+  };
+
+  // 根据排盘类型获取高亮样式
+  const getChartTypeHighlight = (
+    chartType: ChartType,
+    palaceIndex: number,
+    extendedData?: ExtendedIztroChart
+  ): string => {
+    // 这里可以根据不同的排盘类型添加特殊的高亮逻辑
+    // 目前返回空字符串，后续可以扩展
+    return "";
   };
 
   return (
@@ -237,56 +732,147 @@ export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({
       )}`}
       data-palace={index}
     >
-      {/* 上半部：星曜显示区域 */}
+      {/* 上半部：星曜显示区域 - 按照紫微斗数知识库分类体系 */}
       <div className="ziwei-palace-stars-upper flex-1">
-        {/* 主星区域 - 带背景色 */}
-        <div className="ziwei-major-stars mb-1">
-          {renderStarsWithBackground(palace.majorStars, "ziwei-major-stars")}
-        </div>
+        {/* 主星区域 (major) - 十四主星 */}
+        {renderStarsByType(
+          [
+            ...palace.majorStars,
+            ...palace.minorStars,
+            ...palace.adjectiveStars,
+          ],
+          "major"
+        )}
 
-        {/* 辅星区域 */}
-        <div className="ziwei-minor-stars mb-1">
-          {renderStars(palace.minorStars, "ziwei-minor-stars")}
-        </div>
+        {/* 六吉星区域 (soft) - 文昌文曲左辅右弼天魁天钺 */}
+        {renderStarsByType(
+          [
+            ...palace.majorStars,
+            ...palace.minorStars,
+            ...palace.adjectiveStars,
+          ],
+          "soft"
+        )}
 
-        {/* 杂曜区域 */}
-        <div className="ziwei-adjective-stars mb-1">
-          {renderStars(palace.adjectiveStars, "ziwei-adjective-stars")}
-        </div>
+        {/* 六煞星区域 (tough) - 擎羊陀罗火星铃星地空地劫 */}
+        {renderStarsByType(
+          [
+            ...palace.majorStars,
+            ...palace.minorStars,
+            ...palace.adjectiveStars,
+          ],
+          "tough"
+        )}
 
-        {/* 流年星曜 - 如流昌等 */}
-        {palace.yearlyStars && palace.yearlyStars.length > 0 && (
-          <div className="text-xs text-blue-600 font-medium mb-1">
-            {palace.yearlyStars.includes("流昌") ? "流昌" : ""}
+        {/* 禄存区域 (lucun) */}
+        {renderStarsByType(
+          [
+            ...palace.majorStars,
+            ...palace.minorStars,
+            ...palace.adjectiveStars,
+          ],
+          "lucun"
+        )}
+
+        {/* 天马区域 (tianma) */}
+        {renderStarsByType(
+          [
+            ...palace.majorStars,
+            ...palace.minorStars,
+            ...palace.adjectiveStars,
+          ],
+          "tianma"
+        )}
+
+        {/* 桃花星区域 (flower) - 红鸾天喜天姚咸池 */}
+        {renderStarsByType(
+          [
+            ...palace.majorStars,
+            ...palace.minorStars,
+            ...palace.adjectiveStars,
+          ],
+          "flower"
+        )}
+
+        {/* 解神区域 (helper) */}
+        {renderStarsByType(
+          [
+            ...palace.majorStars,
+            ...palace.minorStars,
+            ...palace.adjectiveStars,
+          ],
+          "helper"
+        )}
+
+        {/* 杂曜区域 (adjective) - 其他杂曜 */}
+        {renderStarsByType(
+          [
+            ...palace.majorStars,
+            ...palace.minorStars,
+            ...palace.adjectiveStars,
+          ],
+          "adjective"
+        )}
+
+        {/* 运限星曜分类显示 */}
+        {palace.horoscopeStarCategories && (
+          <div className="mb-1">
+            {/* 岁建十二神：流羊、流陀、流魁、流钺、年解 */}
+            {palace.horoscopeStarCategories.suijian12.length > 0 && (
+              <div className="text-xs text-red-600 font-medium mb-0.5">
+                {palace.horoscopeStarCategories.suijian12.join(" ")}
+              </div>
+            )}
+
+            {/* 鸾喜马曲昌曲类：流喜、运鸾、流马、运曲、运昌 */}
+            {palace.horoscopeStarCategories.luanxi.length > 0 && (
+              <div className="text-xs text-pink-600 font-medium mb-0.5">
+                {palace.horoscopeStarCategories.luanxi.join(" ")}
+              </div>
+            )}
+
+            {/* 其他运限星曜 */}
+            {palace.horoscopeStarCategories.other.length > 0 && (
+              <div className="text-xs text-purple-600 font-medium mb-0.5">
+                {palace.horoscopeStarCategories.other.join(" ")}
+              </div>
+            )}
           </div>
         )}
 
-        {/* 童限信息 */}
-        {palace.decadalName && palace.decadalStem && (
-          <div className="text-xs text-indigo-600 font-medium mb-1">
-            {palace.decadalName}·{palace.decadalStem}
-          </div>
-        )}
+        {/* 神煞系统区域 - 固定位置显示 */}
+        <div className="ziwei-shensha-area border-t border-gray-200 pt-1 mt-1">
+          {/* 长生十二神 */}
+          {palace.changsheng12 && (
+            <div className="text-xs bg-yellow-100 text-yellow-800 px-1 py-0.5 rounded mb-1 inline-block">
+              <span className="font-medium">长生:</span> {palace.changsheng12}
+            </div>
+          )}
 
-        {/* 博士十二神 */}
-        {palace.boshi12 && (
-          <div className="text-xs text-orange-600 font-medium mb-1">
-            {palace.boshi12}
-          </div>
-        )}
+          {/* 博士十二神 */}
+          {palace.boshi12 && (
+            <div className="text-xs bg-orange-100 text-orange-800 px-1 py-0.5 rounded mb-1 inline-block ml-1">
+              <span className="font-medium">博士:</span> {palace.boshi12}
+            </div>
+          )}
 
-        {/* 流年将前诸星 */}
-        {palace.jiangqian12 && (
-          <div className="text-xs text-red-500 mb-1">{palace.jiangqian12}</div>
-        )}
+          {/* 将前十二神 */}
+          {palace.jiangqian12 && (
+            <div className="text-xs bg-red-100 text-red-800 px-1 py-0.5 rounded mb-1 inline-block ml-1">
+              <span className="font-medium">将前:</span> {palace.jiangqian12}
+            </div>
+          )}
 
-        {/* 流年岁前诸星 */}
-        {palace.suiqian12 && (
-          <div className="text-xs text-gray-500 mb-1">{palace.suiqian12}</div>
-        )}
+          {/* 岁前十二神 */}
+          {palace.suiqian12 && (
+            <div className="text-xs bg-gray-100 text-gray-800 px-1 py-0.5 rounded mb-1 inline-block ml-1">
+              <span className="font-medium">岁前:</span> {palace.suiqian12}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* 下半部：其他信息 */}
+      {/* 下半部：宫位信息 */}
       <div className="ziwei-palace-lower">
         {/* 宫位名称 */}
         <div className="text-center text-sm font-bold text-gray-800 mb-1">
@@ -302,17 +888,11 @@ export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({
 
         {/* 大限年龄 */}
         <div className="text-center text-xs text-gray-500 mb-1">
-          {palace.decadal.range.join(" - ")}
+          {palace.decadal.range[0]} - {Math.min(palace.decadal.range[1], 90)}
         </div>
 
-        {/* 底部：长生十二神和天干地支在同一行 */}
-        <div className="ziwei-palace-footer flex justify-between items-center">
-          {/* 长生十二神 */}
-          <span className="text-xs text-purple-600 font-medium">
-            {palace.changsheng12 || ""}
-          </span>
-
-          {/* 天干地支 */}
+        {/* 底部：天干地支 */}
+        <div className="text-center">
           <span className="text-sm font-bold">
             <span className="text-gray-600">{palace.heavenlyStem}</span>
             <span className="text-gray-800">{palace.earthlyBranch}</span>
@@ -322,55 +902,3 @@ export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({
     </div>
   );
 };
-
-// 辅助函数：根据排盘类型返回特殊高亮样式
-function getChartTypeHighlight(
-  chartType: ChartType,
-  palaceIndex: number,
-  extendedData?: ExtendedIztroChart
-): string {
-  if (!extendedData) return "";
-
-  switch (chartType) {
-    case "flying":
-      // 飞星盘：高亮有四化星飞入/飞出的宫位
-      if (
-        extendedData.flyingStars?.some(
-          (fs) => fs.fromPalace === palaceIndex || fs.toPalace === palaceIndex
-        )
-      ) {
-        return "ziwei-flying-highlight";
-      }
-      break;
-    case "sanhe":
-      // 三合盘：高亮三方四正宫位
-      if (
-        extendedData.sanheGroups?.some((group) =>
-          group.relatedPalaces.includes(palaceIndex)
-        )
-      ) {
-        return "ziwei-sanhe-highlight";
-      }
-      break;
-    case "sihua":
-      // 四化盘：高亮有四化星的宫位
-      const palace = extendedData.palaces[palaceIndex];
-      if (palace && hasAnyMutagenStar(palace)) {
-        return "ziwei-sihua-highlight";
-      }
-      break;
-    default:
-      return "";
-  }
-  return "";
-}
-
-// 辅助函数：检查宫位是否有四化星
-function hasAnyMutagenStar(palace: Palace): boolean {
-  const allStars = [
-    ...palace.majorStars,
-    ...palace.minorStars,
-    ...palace.adjectiveStars,
-  ];
-  return allStars.some((star) => star.mutagen);
-}

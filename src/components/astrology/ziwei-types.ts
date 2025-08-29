@@ -36,10 +36,12 @@ export interface Palace {
     earthlyBranch: string; // 大限地支
   };
   ages: number[]; // 流年岁数列表
-  // 运限相关信息
-  decadalName?: string; // 童限名称
-  decadalStem?: string; // 童限天干
-  yearlyStars?: string[]; // 流年星曜列表
+  // 运限星曜分类
+  horoscopeStarCategories?: {
+    suijian12: string[]; // 岁建十二神：流羊、流陀、流魁、流钺、年解
+    luanxi: string[]; // 鸾喜马曲昌曲类：流喜、运鸾、流马、运曲、运昌
+    other: string[]; // 其他运限星曜
+  };
 }
 
 // 定义整个命盘的顶层结构
