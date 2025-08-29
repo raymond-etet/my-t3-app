@@ -8,6 +8,270 @@ import { ZiweiTextChart } from "./ziwei-text-chart";
 import { ZiweiSanheLines } from "./ziwei-sanhe-lines";
 import "./ziwei-chart.css";
 
+/**
+ * 生成AI分析用的完整描述文本
+ * @param {ExtendedIztroChart} chartData - 排盘数据
+ * @returns {string} - 格式化的描述文本
+ */
+function generateAIDescription(chartData: ExtendedIztroChart): string {
+  // 基本信息
+  const basicInfo = `
+【个人信息】
+性别：${chartData.gender}
+阳历：${chartData.solarDate}
+农历：${chartData.lunarDate}
+八字：${chartData.chineseDate}
+时辰：${chartData.time}(${chartData.timeRange})
+星座：${chartData.sign}
+生肖：${chartData.zodiac}
+五行局：${chartData.fiveElementsClass}
+命主：${chartData.soul}
+身主：${chartData.body}
+命宫：${chartData.earthlyBranchOfSoulPalace}
+身宫：${chartData.earthlyBranchOfBodyPalace}
+`;
+
+  // 三合盘详细描述
+  let sanheDescription = `
+【三合盘详细分析】
+三合盘显示完整的星曜分布和宫位关系：
+
+命宫三方四正格局：
+`;
+
+  // 找到命宫
+  const soulPalace = chartData.palaces.find(
+    (p) => p.earthlyBranch === chartData.earthlyBranchOfSoulPalace
+  );
+  if (soulPalace) {
+    const soulIndex = soulPalace.index;
+    const wealthIndex = (soulIndex + 4) % 12; // 财帛宫
+    const careerIndex = (soulIndex + 8) % 12; // 事业宫
+    const travelIndex = (soulIndex + 6) % 12; // 迁移宫
+
+    const wealthPalace = chartData.palaces[wealthIndex];
+    const careerPalace = chartData.palaces[careerIndex];
+    const travelPalace = chartData.palaces[travelIndex];
+
+    sanheDescription += `- 命宫(${soulPalace.name}): ${
+      soulPalace.majorStars.map((s) => s.name).join("、") || "无主星"
+    }
+- 财帛宫(${wealthPalace.name}): ${
+      wealthPalace.majorStars.map((s) => s.name).join("、") || "无主星"
+    }
+- 事业宫(${careerPalace.name}): ${
+      careerPalace.majorStars.map((s) => s.name).join("、") || "无主星"
+    }
+- 迁移宫(${travelPalace.name}): ${
+      travelPalace.majorStars.map((s) => s.name).join("、") || "无主星"
+    }
+
+三方四正分析要点：
+- 命宫主个性、才华、先天格局
+- 财帛宫主财运、理财能力、赚钱方式
+- 事业宫主事业、工作、社会地位
+- 迁移宫主人际、外出、变动机会
+`;
+  }
+
+  sanheDescription += `
+十四主星分布概况：
+`;
+
+  // 统计主星分布
+  const majorStarMap: { [key: string]: string } = {};
+  chartData.palaces.forEach((palace) => {
+    palace.majorStars.forEach((star) => {
+      if (
+        [
+          "紫微",
+          "天机",
+          "太阳",
+          "武曲",
+          "天同",
+          "廉贞",
+          "天府",
+          "太阴",
+          "贪狼",
+          "巨门",
+          "天相",
+          "天梁",
+          "七杀",
+          "破军",
+        ].includes(star.name)
+      ) {
+        majorStarMap[star.name] = palace.name;
+      }
+    });
+  });
+
+  Object.entries(majorStarMap).forEach(([star, palace]) => {
+    sanheDescription += `- ${star}星在${palace}\n`;
+  });
+
+  // 飞星盘详细描述
+  let flyingDescription = `
+【飞星盘详细分析】
+飞星盘显示四化星的具体飞化路径和影响关系：
+`;
+
+  // 生成飞星详细信息
+  chartData.palaces.forEach((palace, palaceIndex: number) => {
+    const allStars = [
+      ...palace.majorStars,
+      ...palace.minorStars,
+      ...palace.adjectiveStars,
+    ];
+    const sihuaStars = allStars.filter((star) => star.mutagen);
+
+    if (sihuaStars.length > 0) {
+      sihuaStars.forEach((star) => {
+        const fromPalace = palace.name;
+        const symbol =
+          star.mutagen === "禄"
+            ? "→禄"
+            : star.mutagen === "权"
+            ? "→权"
+            : star.mutagen === "科"
+            ? "→科"
+            : "→忌";
+        flyingDescription += `- ${star.name}${symbol} 从${fromPalace}飞出，影响对宫及三方四正\n`;
+      });
+    }
+  });
+
+  flyingDescription += `
+飞星符号说明：
+→禄：化禄星飞入，主财运、贵人、顺遂
+→权：化权星飞入，主权力、主导、积极
+→科：化科星飞入，主名声、考试、文书
+→忌：化忌星飞入，主阻碍、纠纷、不顺
+`;
+
+  // 四化盘详细描述
+  let sihuaDescription = `
+【四化盘详细分析】
+四化盘专门显示四化星曜的分布和作用：
+`;
+
+  // 统计四化星分布
+  const luStars: string[] = [];
+  const quanStars: string[] = [];
+  const keStars: string[] = [];
+  const jiStars: string[] = [];
+
+  chartData.palaces.forEach((palace) => {
+    const allStars = [
+      ...palace.majorStars,
+      ...palace.minorStars,
+      ...palace.adjectiveStars,
+    ];
+    allStars.forEach((star) => {
+      if (star.mutagen === "禄") luStars.push(`${star.name}(${palace.name})`);
+      if (star.mutagen === "权") quanStars.push(`${star.name}(${palace.name})`);
+      if (star.mutagen === "科") keStars.push(`${star.name}(${palace.name})`);
+      if (star.mutagen === "忌") jiStars.push(`${star.name}(${palace.name})`);
+    });
+  });
+
+  sihuaDescription += `
+化禄星分布：${luStars.join("、") || "无"}
+化权星分布：${quanStars.join("、") || "无"}
+化科星分布：${keStars.join("、") || "无"}
+化忌星分布：${jiStars.join("、") || "无"}
+
+四化星作用说明：
+化禄：主财运亨通、贵人相助、事业顺利
+化权：主权力地位、领导能力、积极进取
+化科：主名声地位、考试顺利、文书吉利
+化忌：主阻碍困难、人际纠纷、事业不顺
+`;
+
+  // 宫位详情
+  let palaceDetails = "\n【十二宫位详情】\n";
+
+  chartData.palaces.forEach((palace, index: number) => {
+    const allStars = [
+      ...palace.majorStars,
+      ...palace.minorStars,
+      ...palace.adjectiveStars,
+    ];
+    const majorStars = allStars.filter((star) =>
+      [
+        "紫微",
+        "天机",
+        "太阳",
+        "武曲",
+        "天同",
+        "廉贞",
+        "天府",
+        "太阴",
+        "贪狼",
+        "巨门",
+        "天相",
+        "天梁",
+        "七杀",
+        "破军",
+      ].includes(star.name)
+    );
+    const luckyStars = allStars.filter((star) =>
+      ["文昌", "文曲", "左辅", "右弼", "天魁", "天钺"].includes(star.name)
+    );
+    const unluckyStars = allStars.filter((star) =>
+      ["擎羊", "陀罗", "火星", "铃星", "地空", "地劫"].includes(star.name)
+    );
+    const sihuaStars = allStars.filter((star) => star.mutagen);
+
+    palaceDetails += `
+${palace.name}宫（${palace.heavenlyStem}${palace.earthlyBranch}）${
+      palace.isBodyPalace ? "[身宫]" : ""
+    }${palace.isOriginalPalace ? "[来因宫]" : ""}
+- 主星：${
+      majorStars
+        .map((s) => `${s.name}${s.brightness ? `(${s.brightness})` : ""}`)
+        .join("、") || "无"
+    }
+- 吉星：${
+      luckyStars
+        .map((s) => `${s.name}${s.brightness ? `(${s.brightness})` : ""}`)
+        .join("、") || "无"
+    }
+- 煞星：${
+      unluckyStars
+        .map((s) => `${s.name}${s.brightness ? `(${s.brightness})` : ""}`)
+        .join("、") || "无"
+    }
+- 四化：${sihuaStars.map((s) => `${s.name}${s.mutagen}`).join("、") || "无"}
+- 大限：${palace.decadal.range.join("-")}岁
+- 神煞：长生(${palace.changsheng12}) 博士(${palace.boshi12}) 将前(${
+      palace.jiangqian12
+    })
+`;
+  });
+
+  // 四化统计
+  let sihuaSummary = "";
+  if (chartData.sihuaDisplay) {
+    sihuaSummary = `
+【四化星统计】
+化禄星：${chartData.sihuaDisplay.lu.map((s) => s.name).join("、") || "无"}
+化权星：${chartData.sihuaDisplay.quan.map((s) => s.name).join("、") || "无"}
+化科星：${chartData.sihuaDisplay.ke.map((s) => s.name).join("、") || "无"}
+化忌星：${chartData.sihuaDisplay.ji.map((s) => s.name).join("、") || "无"}
+`;
+  }
+
+  return `${basicInfo}${sanheDescription}${flyingDescription}${sihuaDescription}${palaceDetails}${sihuaSummary}
+
+【分析要求】
+请基于以上排盘信息进行紫微斗数分析，重点关注：
+1. 命格特质和性格分析
+2. 事业财运发展趋势
+3. 感情婚姻状况
+4. 健康注意事项
+5. 人生重要转折点和大运分析`;
+}
+
 export function ZiweiChart() {
   const [birthDate, setBirthDate] = useState<string>("2025-01-29");
   const [birthTime, setBirthTime] = useState<string>("12:00");
@@ -19,6 +283,26 @@ export function ZiweiChart() {
   const [viewMode, setViewMode] = useState<"grid" | "text">("grid");
   const [chartType, setChartType] = useState<ChartType>("sanhe");
   const [showSanheLines, setShowSanheLines] = useState<boolean>(false);
+  const [copyStatus, setCopyStatus] = useState<
+    "idle" | "copying" | "success" | "error"
+  >("idle");
+
+  // 复制功能
+  const handleCopyToClipboard = async () => {
+    if (!chartData) return;
+
+    setCopyStatus("copying");
+    try {
+      const aiDescription = generateAIDescription(chartData);
+      await navigator.clipboard.writeText(aiDescription);
+      setCopyStatus("success");
+      setTimeout(() => setCopyStatus("idle"), 2000);
+    } catch (error) {
+      console.error("复制失败:", error);
+      setCopyStatus("error");
+      setTimeout(() => setCopyStatus("idle"), 2000);
+    }
+  };
 
   const handleSubmit = async () => {
     if (!birthDate || !birthTime) {
@@ -194,63 +478,162 @@ export function ZiweiChart() {
           <div className="flex flex-col gap-4 mb-6">
             <div className="flex justify-between items-center">
               <h3 className="text-xl font-semibold text-gray-800">排盘结果</h3>
-              <div className="flex space-x-2">
+              <div className="flex items-center space-x-3">
+                {/* 复制AI描述按钮 */}
                 <button
-                  onClick={() => setViewMode("grid")}
-                  className={`px-4 py-2 rounded-md ${
-                    viewMode === "grid"
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 text-gray-700"
+                  onClick={handleCopyToClipboard}
+                  disabled={copyStatus === "copying"}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                    copyStatus === "success"
+                      ? "bg-green-100 text-green-700 border border-green-300"
+                      : copyStatus === "error"
+                      ? "bg-red-100 text-red-700 border border-red-300"
+                      : copyStatus === "copying"
+                      ? "bg-gray-100 text-gray-500 border border-gray-300 cursor-not-allowed"
+                      : "bg-blue-100 text-blue-700 border border-blue-300 hover:bg-blue-200"
                   }`}
                 >
-                  图形排盘
+                  {copyStatus === "copying" ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      <span>复制中...</span>
+                    </>
+                  ) : copyStatus === "success" ? (
+                    <>
+                      <svg
+                        className="h-4 w-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span>已复制</span>
+                    </>
+                  ) : copyStatus === "error" ? (
+                    <>
+                      <svg
+                        className="h-4 w-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      <span>复制失败</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        className="h-4 w-4"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                        <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+                      </svg>
+                      <span>复制AI描述</span>
+                    </>
+                  )}
                 </button>
-                <button
-                  onClick={() => setViewMode("text")}
-                  className={`px-4 py-2 rounded-md ${
-                    viewMode === "text"
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-200 text-gray-700"
-                  }`}
-                >
-                  文字排盘
-                </button>
+
+                {/* 视图模式切换按钮 */}
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setViewMode("grid")}
+                    className={`px-4 py-2 rounded-md ${
+                      viewMode === "grid"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700"
+                    }`}
+                  >
+                    图形排盘
+                  </button>
+                  <button
+                    onClick={() => setViewMode("text")}
+                    className={`px-4 py-2 rounded-md ${
+                      viewMode === "text"
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-200 text-gray-700"
+                    }`}
+                  >
+                    文字排盘
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* 排盘类型选项卡 - 只在图形排盘模式下显示 */}
             {viewMode === "grid" && (
-              <div className="flex space-x-2 border-b border-gray-200">
-                <button
-                  onClick={() => setChartType("sanhe")}
-                  className={`px-4 py-2 font-medium ${
-                    chartType === "sanhe"
-                      ? "text-blue-600 border-b-2 border-blue-600"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  三合盘
-                </button>
-                <button
-                  onClick={() => setChartType("flying")}
-                  className={`px-4 py-2 font-medium ${
-                    chartType === "flying"
-                      ? "text-blue-600 border-b-2 border-blue-600"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  飞星盘
-                </button>
-                <button
-                  onClick={() => setChartType("sihua")}
-                  className={`px-4 py-2 font-medium ${
-                    chartType === "sihua"
-                      ? "text-blue-600 border-b-2 border-blue-600"
-                      : "text-gray-500 hover:text-gray-700"
-                  }`}
-                >
-                  四化盘
-                </button>
+              <div className="flex justify-between items-center border-b border-gray-200">
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setChartType("sanhe")}
+                    className={`px-4 py-2 font-medium ${
+                      chartType === "sanhe"
+                        ? "text-blue-600 border-b-2 border-blue-600"
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    三合盘
+                  </button>
+                  <button
+                    onClick={() => setChartType("flying")}
+                    className={`px-4 py-2 font-medium ${
+                      chartType === "flying"
+                        ? "text-blue-600 border-b-2 border-blue-600"
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    飞星盘
+                  </button>
+                  <button
+                    onClick={() => setChartType("sihua")}
+                    className={`px-4 py-2 font-medium ${
+                      chartType === "sihua"
+                        ? "text-blue-600 border-b-2 border-blue-600"
+                        : "text-gray-500 hover:text-gray-700"
+                    }`}
+                  >
+                    四化盘
+                  </button>
+                </div>
+
+                {/* 三方四正连线切换按钮 - 只在三合盘模式下显示 */}
+                {chartType === "sanhe" && (
+                  <button
+                    className={`px-3 py-1 text-sm rounded-md border transition-colors ${
+                      showSanheLines
+                        ? "bg-purple-600 text-white border-purple-600"
+                        : "bg-white text-purple-600 border-purple-600 hover:bg-purple-50"
+                    }`}
+                    onClick={() => setShowSanheLines(!showSanheLines)}
+                    title="切换三方四正连线显示"
+                  >
+                    {showSanheLines ? "隐藏连线" : "显示连线"}
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -266,17 +649,6 @@ export function ZiweiChart() {
                     showSanheLines ? "show-sanhe-lines" : ""
                   }`}
                 >
-                  {/* 三方四正连线切换按钮 */}
-                  <button
-                    className={`ziwei-sanhe-toggle ${
-                      showSanheLines ? "active" : ""
-                    }`}
-                    onClick={() => setShowSanheLines(!showSanheLines)}
-                    title="切换三方四正连线显示"
-                  >
-                    {showSanheLines ? "隐藏连线" : "显示连线"}
-                  </button>
-
                   {/* 生成12个宫位 */}
                   {Array.from({ length: 12 }, (_, palaceIndex) => {
                     const palace = chartData.palaces[palaceIndex];

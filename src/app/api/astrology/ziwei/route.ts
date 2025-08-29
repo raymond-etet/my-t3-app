@@ -204,6 +204,7 @@ export async function GET(request: NextRequest) {
           heavenlyStem: palace.heavenlyStem,
           earthlyBranch: palace.earthlyBranch,
           isBodyPalace: palace.isBodyPalace,
+          isOriginalPalace: palace.isOriginalPalace, // 添加来因宫标识
           isSoulPalace:
             palace.earthlyBranch === chart.earthlyBranchOfSoulPalace,
           // 提取星曜数据，只保留需要的属性

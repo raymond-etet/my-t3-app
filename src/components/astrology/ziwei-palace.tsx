@@ -29,6 +29,8 @@ export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({
   const isSoulPalace = palace.earthlyBranch === soulPalaceBranch;
   // 判断当前宫位是否为身宫
   const isBodyPalace = palace.earthlyBranch === bodyPalaceBranch;
+  // 判断当前宫位是否为来因宫
+  const isOriginalPalace = palace.isOriginalPalace;
 
   // 获取四化样式类名的辅助函数
   const getMutagenClass = (mutagen: string): string => {
@@ -725,11 +727,9 @@ export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({
     <div
       className={`ziwei-palace-card ${
         isBodyPalace ? "ziwei-body-palace" : ""
-      } ${isSoulPalace ? "ziwei-soul-palace" : ""} ${getChartTypeHighlight(
-        chartType,
-        index,
-        extendedData
-      )}`}
+      } ${isSoulPalace ? "ziwei-soul-palace" : ""} ${
+        isOriginalPalace ? "ziwei-original-palace" : ""
+      } ${getChartTypeHighlight(chartType, index, extendedData)}`}
       data-palace={index}
     >
       {/* 上半部：星曜显示区域 - 按照紫微斗数知识库分类体系 */}
@@ -879,6 +879,9 @@ export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({
           {palace.name}
           {isSoulPalace && <span className="text-blue-500 ml-1">(命)</span>}
           {isBodyPalace && <span className="text-red-500 ml-1">(身)</span>}
+          {isOriginalPalace && (
+            <span className="text-purple-500 ml-1">(来因)</span>
+          )}
         </div>
 
         {/* 年限显示 */}

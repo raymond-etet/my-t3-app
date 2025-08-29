@@ -14,6 +14,274 @@ interface ZiweiTextChartProps {
 }
 
 /**
+ * 生成AI分析用的完整描述文本
+ * @param {IztroChart | ExtendedIztroChart} chartData - 排盘数据
+ * @returns {string} - 格式化的描述文本
+ */
+function generateAIDescription(
+  chartData: IztroChart | ExtendedIztroChart
+): string {
+  const isExtended = "chartType" in chartData;
+
+  // 基本信息
+  const basicInfo = `
+【个人信息】
+性别：${chartData.gender}
+阳历：${chartData.solarDate}
+农历：${chartData.lunarDate}
+八字：${chartData.chineseDate}
+时辰：${chartData.time}(${chartData.timeRange})
+星座：${chartData.sign}
+生肖：${chartData.zodiac}
+五行局：${chartData.fiveElementsClass}
+命主：${chartData.soul}
+身主：${chartData.body}
+命宫：${chartData.earthlyBranchOfSoulPalace}
+身宫：${chartData.earthlyBranchOfBodyPalace}
+`;
+
+  // 三合盘详细描述
+  let sanheDescription = `
+【三合盘详细分析】
+三合盘显示完整的星曜分布和宫位关系：
+
+命宫三方四正格局：
+`;
+
+  // 找到命宫
+  const soulPalace = chartData.palaces.find(
+    (p) => p.earthlyBranch === chartData.earthlyBranchOfSoulPalace
+  );
+  if (soulPalace) {
+    const soulIndex = soulPalace.index;
+    const wealthIndex = (soulIndex + 4) % 12; // 财帛宫
+    const careerIndex = (soulIndex + 8) % 12; // 官禄宫
+    const travelIndex = (soulIndex + 6) % 12; // 迁移宫
+
+    const wealthPalace = chartData.palaces[wealthIndex];
+    const careerPalace = chartData.palaces[careerIndex];
+    const travelPalace = chartData.palaces[travelIndex];
+
+    sanheDescription += `- 命宫(${soulPalace.name}): ${
+      soulPalace.majorStars.map((s) => s.name).join("、") || "无主星"
+    }
+- 财帛宫(${wealthPalace.name}): ${
+      wealthPalace.majorStars.map((s) => s.name).join("、") || "无主星"
+    }
+- 官禄宫(${careerPalace.name}): ${
+      careerPalace.majorStars.map((s) => s.name).join("、") || "无主星"
+    }
+- 迁移宫(${travelPalace.name}): ${
+      travelPalace.majorStars.map((s) => s.name).join("、") || "无主星"
+    }
+
+三方四正分析要点：
+- 命宫主个性、才华、先天格局
+- 财帛宫主财运、理财能力、赚钱方式
+- 官禄宫主事业、工作、社会地位
+- 迁移宫主人际、外出、变动机会
+`;
+  }
+
+  sanheDescription += `
+十四主星分布概况：
+`;
+
+  // 统计主星分布
+  const majorStarMap: { [key: string]: string } = {};
+  chartData.palaces.forEach((palace) => {
+    palace.majorStars.forEach((star) => {
+      if (
+        [
+          "紫微",
+          "天机",
+          "太阳",
+          "武曲",
+          "天同",
+          "廉贞",
+          "天府",
+          "太阴",
+          "贪狼",
+          "巨门",
+          "天相",
+          "天梁",
+          "七杀",
+          "破军",
+        ].includes(star.name)
+      ) {
+        majorStarMap[star.name] = palace.name;
+      }
+    });
+  });
+
+  Object.entries(majorStarMap).forEach(([star, palace]) => {
+    sanheDescription += `- ${star}星在${palace}\n`;
+  });
+
+  // 飞星盘详细描述
+  let flyingDescription = `
+【飞星盘详细分析】
+飞星盘显示四化星的具体飞化路径和影响关系：
+`;
+
+  // 生成飞星详细信息
+  chartData.palaces.forEach((palace: Palace, palaceIndex: number) => {
+    const allStars = [
+      ...palace.majorStars,
+      ...palace.minorStars,
+      ...palace.adjectiveStars,
+    ];
+    const sihuaStars = allStars.filter((star) => star.mutagen);
+
+    if (sihuaStars.length > 0) {
+      sihuaStars.forEach((star) => {
+        const fromPalace = palace.name;
+        const symbol =
+          star.mutagen === "禄"
+            ? "→禄"
+            : star.mutagen === "权"
+            ? "→权"
+            : star.mutagen === "科"
+            ? "→科"
+            : "→忌";
+        flyingDescription += `- ${star.name}${symbol} 从${fromPalace}飞出，影响对宫及三方四正\n`;
+      });
+    }
+  });
+
+  flyingDescription += `
+飞星符号说明：
+→禄：化禄星飞入，主财运、贵人、顺遂
+→权：化权星飞入，主权力、主导、积极
+→科：化科星飞入，主名声、考试、文书
+→忌：化忌星飞入，主阻碍、纠纷、不顺
+`;
+
+  // 四化盘详细描述
+  let sihuaDescription = `
+【四化盘详细分析】
+四化盘专门显示四化星曜的分布和作用：
+`;
+
+  // 统计四化星分布
+  const luStars: string[] = [];
+  const quanStars: string[] = [];
+  const keStars: string[] = [];
+  const jiStars: string[] = [];
+
+  chartData.palaces.forEach((palace: Palace) => {
+    const allStars = [
+      ...palace.majorStars,
+      ...palace.minorStars,
+      ...palace.adjectiveStars,
+    ];
+    allStars.forEach((star) => {
+      if (star.mutagen === "禄") luStars.push(`${star.name}(${palace.name})`);
+      if (star.mutagen === "权") quanStars.push(`${star.name}(${palace.name})`);
+      if (star.mutagen === "科") keStars.push(`${star.name}(${palace.name})`);
+      if (star.mutagen === "忌") jiStars.push(`${star.name}(${palace.name})`);
+    });
+  });
+
+  sihuaDescription += `
+化禄星分布：${luStars.join("、") || "无"}
+化权星分布：${quanStars.join("、") || "无"}
+化科星分布：${keStars.join("、") || "无"}
+化忌星分布：${jiStars.join("、") || "无"}
+
+四化星作用说明：
+化禄：主财运亨通、贵人相助、事业顺利
+化权：主权力地位、领导能力、积极进取
+化科：主名声地位、考试顺利、文书吉利
+化忌：主阻碍困难、人际纠纷、事业不顺
+`;
+
+  // 宫位详情
+  let palaceDetails = "\n【十二宫位详情】\n";
+
+  chartData.palaces.forEach((palace: Palace, index: number) => {
+    const allStars = [
+      ...palace.majorStars,
+      ...palace.minorStars,
+      ...palace.adjectiveStars,
+    ];
+    const majorStars = allStars.filter((star) =>
+      [
+        "紫微",
+        "天机",
+        "太阳",
+        "武曲",
+        "天同",
+        "廉贞",
+        "天府",
+        "太阴",
+        "贪狼",
+        "巨门",
+        "天相",
+        "天梁",
+        "七杀",
+        "破军",
+      ].includes(star.name)
+    );
+    const luckyStars = allStars.filter((star) =>
+      ["文昌", "文曲", "左辅", "右弼", "天魁", "天钺"].includes(star.name)
+    );
+    const unluckyStars = allStars.filter((star) =>
+      ["擎羊", "陀罗", "火星", "铃星", "地空", "地劫"].includes(star.name)
+    );
+    const sihuaStars = allStars.filter((star) => star.mutagen);
+
+    palaceDetails += `
+${palace.name}宫（${palace.heavenlyStem}${palace.earthlyBranch}）${
+      palace.isBodyPalace ? "[身宫]" : ""
+    }${palace.isOriginalPalace ? "[来因宫]" : ""}
+- 主星：${
+      majorStars
+        .map((s) => `${s.name}${s.brightness ? `(${s.brightness})` : ""}`)
+        .join("、") || "无"
+    }
+- 吉星：${
+      luckyStars
+        .map((s) => `${s.name}${s.brightness ? `(${s.brightness})` : ""}`)
+        .join("、") || "无"
+    }
+- 煞星：${
+      unluckyStars
+        .map((s) => `${s.name}${s.brightness ? `(${s.brightness})` : ""}`)
+        .join("、") || "无"
+    }
+- 四化：${sihuaStars.map((s) => `${s.name}${s.mutagen}`).join("、") || "无"}
+- 大限：${palace.decadal.range.join("-")}岁
+- 神煞：长生(${palace.changsheng12}) 博士(${palace.boshi12}) 将前(${
+      palace.jiangqian12
+    })
+`;
+  });
+
+  // 四化统计
+  let sihuaSummary = "";
+  if (isExtended && chartData.sihuaDisplay) {
+    sihuaSummary = `
+【四化星统计】
+化禄星：${chartData.sihuaDisplay.lu.map((s) => s.name).join("、") || "无"}
+化权星：${chartData.sihuaDisplay.quan.map((s) => s.name).join("、") || "无"}
+化科星：${chartData.sihuaDisplay.ke.map((s) => s.name).join("、") || "无"}
+化忌星：${chartData.sihuaDisplay.ji.map((s) => s.name).join("、") || "无"}
+`;
+  }
+
+  return `${basicInfo}${sanheDescription}${flyingDescription}${sihuaDescription}${palaceDetails}${sihuaSummary}
+
+【分析要求】
+请基于以上排盘信息进行紫微斗数分析，重点关注：
+1. 命格特质和性格分析
+2. 事业财运发展趋势
+3. 感情婚姻状况
+4. 健康注意事项
+5. 人生重要转折点和大运分析`;
+}
+
+/**
  * 渲染星曜信息的辅助函数
  * @param {Star[]} stars - 星曜数组
  * @returns {string} - 格式化后的星曜字符串
@@ -104,7 +372,7 @@ export const ZiweiTextChart: React.FC<ZiweiTextChartProps> = ({
       "财帛宫",
       "疾厄宫",
       "迁移宫",
-      "奴仆宫",
+      "交友宫",
       "事业宫",
       "田宅宫",
       "福德宫",
@@ -443,6 +711,11 @@ export const ZiweiTextChart: React.FC<ZiweiTextChartProps> = ({
                   {palace.isBodyPalace && (
                     <span className="text-primary ml-2 font-normal text-sm badge badge-primary">
                       身宫
+                    </span>
+                  )}
+                  {palace.isOriginalPalace && (
+                    <span className="text-purple-600 ml-2 font-normal text-sm badge badge-secondary">
+                      来因宫
                     </span>
                   )}
                 </h4>
