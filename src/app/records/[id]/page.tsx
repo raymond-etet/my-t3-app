@@ -5,9 +5,9 @@ import Link from "next/link";
 import { ZiweiRecordDetail } from "~/components/records/ziwei-record-detail";
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function RecordDetailPage({ params }: PageProps) {
@@ -18,9 +18,10 @@ export default async function RecordDetailPage({ params }: PageProps) {
   }
 
   // 获取排盘记录
+  const { id } = await params;
   const record = await db.ziweiChart.findFirst({
     where: {
-      id: params.id,
+      id: id,
       userId: session.user.id, // 确保用户只能访问自己的记录
     },
   });

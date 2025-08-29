@@ -10,11 +10,11 @@ interface ZiweiRecord {
   id: string;
   name: string | null;
   gender: string;
-  birthDate: string;
+  birthDate: Date;
   birthTime: string;
   location: string | null;
   chartData: any; // JSON data
-  createdAt: string;
+  createdAt: Date;
 }
 
 interface ZiweiRecordDetailProps {
@@ -25,13 +25,13 @@ export function ZiweiRecordDetail({ record }: ZiweiRecordDetailProps) {
   const [activeTab, setActiveTab] = useState<"info" | "chart">("info");
 
   // 格式化日期
-  const formatDate = (dateString: string) => {
-    return format(new Date(dateString), "yyyy-MM-dd HH:mm", { locale: zhCN });
+  const formatDate = (date: Date) => {
+    return format(date, "yyyy-MM-dd HH:mm", { locale: zhCN });
   };
 
   // 格式化生日
-  const formatBirthDate = (dateString: string) => {
-    return format(new Date(dateString), "yyyy-MM-dd", { locale: zhCN });
+  const formatBirthDate = (date: Date) => {
+    return format(date, "yyyy-MM-dd", { locale: zhCN });
   };
 
   return (
@@ -57,7 +57,7 @@ export function ZiweiRecordDetail({ record }: ZiweiRecordDetailProps) {
         <div className="card bg-white/10 backdrop-blur-sm">
           <div className="card-body">
             <h2 className="card-title text-2xl mb-6">基本信息</h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div className="form-control">
@@ -74,7 +74,13 @@ export function ZiweiRecordDetail({ record }: ZiweiRecordDetailProps) {
                     <span className="label-text text-white/70">性别</span>
                   </label>
                   <div className="input input-bordered bg-white/5 text-white">
-                    <span className={`badge ${record.gender === "male" ? "badge-info" : "badge-secondary"}`}>
+                    <span
+                      className={`badge ${
+                        record.gender === "male"
+                          ? "badge-info"
+                          : "badge-secondary"
+                      }`}
+                    >
                       {record.gender === "male" ? "男" : "女"}
                     </span>
                   </div>
@@ -173,9 +179,9 @@ export function ZiweiRecordDetail({ record }: ZiweiRecordDetailProps) {
         <div className="card bg-white/10 backdrop-blur-sm">
           <div className="card-body">
             <h2 className="card-title text-2xl mb-6">排盘结果</h2>
-            
+
             {record.chartData ? (
-              <ZiweiChart 
+              <ZiweiChart
                 initialData={record.chartData as ExtendedIztroChart}
                 readOnly={true}
               />

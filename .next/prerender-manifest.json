@@ -1,11 +1,61 @@
 {
   "version": 4,
-  "routes": {},
+  "routes": {
+    "/_not-found": {
+      "initialStatus": 404,
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/_not-found",
+      "dataRoute": "/_not-found.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    },
+    "/astrology/ziwei": {
+      "experimentalBypassFor": [
+        {
+          "type": "header",
+          "key": "next-action"
+        },
+        {
+          "type": "header",
+          "key": "content-type",
+          "value": "multipart/form-data;.*"
+        }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/astrology/ziwei",
+      "dataRoute": "/astrology/ziwei.rsc",
+      "allowHeader": [
+        "host",
+        "x-matched-path",
+        "x-prerender-revalidate",
+        "x-prerender-revalidate-if-generated",
+        "x-next-revalidated-tags",
+        "x-next-revalidate-tag-token"
+      ]
+    }
+  },
   "dynamicRoutes": {},
   "notFoundRoutes": [],
   "preview": {
-    "previewModeId": "4871d711cfec0908e5683784bd8c1c93",
-    "previewModeSigningKey": "2df70a6064c4ca2bca6bffd97d396775a3c9f9f01ad88c94febdaa6de315184c",
-    "previewModeEncryptionKey": "d6b2c1d8718a7c00debdb974b8ff3007227952bc7d0f40c9c38c455b0bd8923b"
+    "previewModeId": "e9f59fc0b67a3b366fe9456c8147217d",
+    "previewModeSigningKey": "b36564fd7d81a872718ea34e41d4a85a089307fcf45b86c29c0c5163fefd0990",
+    "previewModeEncryptionKey": "1010a4cb046cfc3aaa264517ceda04a7322ce06fba686fdedda6c6ac7bce7d6d"
   }
 }

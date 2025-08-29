@@ -53,18 +53,19 @@ function generateAIDescription(chartData: ExtendedIztroChart): string {
     const careerPalace = chartData.palaces[careerIndex];
     const travelPalace = chartData.palaces[travelIndex];
 
-    sanheDescription += `- 命宫(${soulPalace.name}): ${
-      soulPalace.majorStars.map((s) => s.name).join("、") || "无主星"
-    }
+    if (wealthPalace && careerPalace && travelPalace) {
+      sanheDescription += `- 命宫(${soulPalace.name}): ${
+        soulPalace.majorStars.map((s) => s.name).join("、") || "无主星"
+      }
 - 财帛宫(${wealthPalace.name}): ${
-      wealthPalace.majorStars.map((s) => s.name).join("、") || "无主星"
-    }
+        wealthPalace.majorStars.map((s) => s.name).join("、") || "无主星"
+      }
 - 事业宫(${careerPalace.name}): ${
-      careerPalace.majorStars.map((s) => s.name).join("、") || "无主星"
-    }
+        careerPalace.majorStars.map((s) => s.name).join("、") || "无主星"
+      }
 - 迁移宫(${travelPalace.name}): ${
-      travelPalace.majorStars.map((s) => s.name).join("、") || "无主星"
-    }
+        travelPalace.majorStars.map((s) => s.name).join("、") || "无主星"
+      }
 
 三方四正分析要点：
 - 命宫主个性、才华、先天格局
@@ -72,6 +73,7 @@ function generateAIDescription(chartData: ExtendedIztroChart): string {
 - 事业宫主事业、工作、社会地位
 - 迁移宫主人际、外出、变动机会
 `;
+    }
   }
 
   sanheDescription += `

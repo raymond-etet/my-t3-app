@@ -4,7 +4,7 @@ import { db } from "~/server/db";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // 验证用户身份
@@ -14,7 +14,7 @@ export async function GET(
       return NextResponse.json({ error: "未授权访问" }, { status: 401 });
     }
 
-    const chartId = params.id;
+    const { id: chartId } = await params;
 
     // 获取排盘记录详情 - 确保只能访问自己的记录
     const chart = await db.ziweiChart.findFirst({
@@ -25,7 +25,10 @@ export async function GET(
     });
 
     if (!chart) {
-      return NextResponse.json({ error: "记录不存在或无权访问" }, { status: 404 });
+      return NextResponse.json(
+        { error: "记录不存在或无权访问" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json(chart);
@@ -37,7 +40,7 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // 验证用户身份
@@ -47,7 +50,7 @@ export async function DELETE(
       return NextResponse.json({ error: "未授权访问" }, { status: 401 });
     }
 
-    const chartId = params.id;
+    const { id: chartId } = await params;
 
     // 删除排盘记录 - 确保只能删除自己的记录
     const deletedChart = await db.ziweiChart.deleteMany({
@@ -58,7 +61,10 @@ export async function DELETE(
     });
 
     if (deletedChart.count === 0) {
-      return NextResponse.json({ error: "记录不存在或无权删除" }, { status: 404 });
+      return NextResponse.json(
+        { error: "记录不存在或无权删除" },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({ message: "删除成功" });

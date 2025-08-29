@@ -22,7 +22,7 @@ export const ZiweiPalace: React.FC<ZiweiPalaceProps> = ({
   index,
   soulPalaceBranch,
   bodyPalaceBranch,
-  chartType = "standard",
+  chartType = "sanhe",
   extendedData,
 }) => {
   // 判断当前宫位是否为命宫
