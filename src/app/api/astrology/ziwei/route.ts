@@ -102,11 +102,11 @@ export async function GET(request: NextRequest) {
       astroType,
     });
 
-    // 3. 配置iztro库使用正确的年分界点 - 修复排盘错误
-    // 关键修复：使用正月初一作为年分界点，而不是立春
+    // 3. 配置iztro库使用正确的年分界点和算法 - 修复排盘错误
+    // 关键修复：使用正月初一作为年分界点 + 中州派算法
     astro.config({
       yearDivide: "normal", // 正月初一分界，而不是立春分界
-      algorithm: "default", // 使用默认算法
+      algorithm: "zhongzhou", // 使用中州派算法，确保正确的星曜计算
     });
 
     let chart;
@@ -134,7 +134,18 @@ export async function GET(request: NextRequest) {
       五行局: chart.fiveElementsClass,
     });
 
-    // 4. 构建返回数据 - 保持与原API兼容的格式
+    // 4. 获取运限信息以补充星曜数据
+    let horoscopeInfo = null;
+    try {
+      horoscopeInfo = chart.horoscope(birthday);
+    } catch (e) {
+      console.log(
+        "获取运限信息失败:",
+        e instanceof Error ? e.message : String(e)
+      );
+    }
+
+    // 5. 构建返回数据 - 保持与原API兼容的格式，并添加运限星曜
     const responseData = {
       gender: genderText,
       solarDate: birthday,
@@ -149,12 +160,78 @@ export async function GET(request: NextRequest) {
       soul: chart.soul,
       body: chart.body,
       fiveElementsClass: chart.fiveElementsClass,
-      palaces: chart.palaces.map((palace: any, index: number) => ({
-        ...palace,
-        index: index,
-        isBodyPalace: palace.isBodyPalace,
-        isSoulPalace: palace.earthlyBranch === chart.earthlyBranchOfSoulPalace,
-      })),
+      palaces: chart.palaces.map((palace: any, index: number) => {
+        // 基础宫位信息 - 只提取需要的数据，避免循环引用
+        const palaceData = {
+          index: index,
+          name: palace.name,
+          heavenlyStem: palace.heavenlyStem,
+          earthlyBranch: palace.earthlyBranch,
+          isBodyPalace: palace.isBodyPalace,
+          isSoulPalace:
+            palace.earthlyBranch === chart.earthlyBranchOfSoulPalace,
+          // 提取星曜数据，只保留需要的属性
+          majorStars:
+            palace.majorStars?.map((star: any) => ({
+              name: star.name,
+              type: star.type,
+              brightness: star.brightness,
+              mutagen: star.mutagen,
+            })) || [],
+          minorStars:
+            palace.minorStars?.map((star: any) => ({
+              name: star.name,
+              type: star.type,
+              brightness: star.brightness,
+              mutagen: star.mutagen,
+            })) || [],
+          adjectiveStars:
+            palace.adjectiveStars?.map((star: any) => ({
+              name: star.name,
+              type: star.type,
+              brightness: star.brightness,
+              mutagen: star.mutagen,
+            })) || [],
+          // 其他星曜信息
+          changsheng12: palace.changsheng12,
+          boshi12: palace.boshi12,
+          jiangqian12: palace.jiangqian12,
+          suiqian12: palace.suiqian12,
+          ages: palace.ages,
+          decadal: {
+            range: palace.decadal.range,
+            heavenlyStem: palace.decadal.heavenlyStem,
+            earthlyBranch: palace.decadal.earthlyBranch,
+          },
+        };
+
+        // 添加运限星曜信息
+        if (horoscopeInfo) {
+          // 添加童限信息
+          (palaceData as any).decadalName = horoscopeInfo.decadal.name;
+          (palaceData as any).decadalStem = horoscopeInfo.decadal.heavenlyStem;
+
+          // 查找流昌等流年星曜（需要遍历所有宫位）
+          const yearlyStars = horoscopeInfo.yearly.stars;
+          const allYearlyStars: string[] = [];
+
+          if (yearlyStars) {
+            yearlyStars.forEach((palaceStars: any[]) => {
+              if (palaceStars && palaceStars.length > 0) {
+                palaceStars.forEach((star: any) => {
+                  if (star.name && star.name.includes("流")) {
+                    allYearlyStars.push(star.name);
+                  }
+                });
+              }
+            });
+          }
+
+          (palaceData as any).yearlyStars = allYearlyStars;
+        }
+
+        return palaceData;
+      }),
       isLunarInput: birthdayType === "lunar",
       birthTimeIndex: birthTime,
       originalInput: {
@@ -163,6 +240,20 @@ export async function GET(request: NextRequest) {
         gender: gender,
         lunar: lunarStr,
       },
+      // 添加运限信息
+      horoscope: horoscopeInfo
+        ? {
+            decadal: {
+              name: horoscopeInfo.decadal.name,
+              heavenlyStem: horoscopeInfo.decadal.heavenlyStem,
+              earthlyBranch: horoscopeInfo.decadal.earthlyBranch,
+            },
+            yearly: {
+              heavenlyStem: horoscopeInfo.yearly.heavenlyStem,
+              earthlyBranch: horoscopeInfo.yearly.earthlyBranch,
+            },
+          }
+        : null,
     };
 
     return NextResponse.json(responseData);

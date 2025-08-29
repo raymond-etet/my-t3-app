@@ -36,6 +36,10 @@ export interface Palace {
     earthlyBranch: string; // 大限地支
   };
   ages: number[]; // 流年岁数列表
+  // 运限相关信息
+  decadalName?: string; // 童限名称
+  decadalStem?: string; // 童限天干
+  yearlyStars?: string[]; // 流年星曜列表
 }
 
 // 定义整个命盘的顶层结构

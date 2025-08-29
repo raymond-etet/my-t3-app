@@ -145,6 +145,45 @@
   background-color: #000; /* 忌 - 黑色 */
 }
 
+/* 星曜亮度样式 */
+.star-brightness-temple {
+  color: #dc2626; /* 庙 - 鲜红色 */
+  font-weight: bold;
+}
+
+.star-brightness-prosperous {
+  color: #ea580c; /* 旺 - 橙红色 */
+  font-weight: 600;
+}
+
+.star-brightness-favorable {
+  color: #059669; /* 得 - 绿色 */
+  font-weight: 500;
+}
+
+.star-brightness-neutral {
+  color: #374151; /* 平 - 深灰色 */
+  font-weight: normal;
+}
+
+.star-brightness-weak {
+  color: #9ca3af; /* 陷 - 浅灰色 */
+  font-weight: normal;
+}
+
+/* 星曜类型颜色 */
+.star-type-good {
+  color: #dc2626; /* 吉星 - 红色 */
+}
+
+.star-type-bad {
+  color: #6b7280; /* 煞星 - 灰色 */
+}
+
+.star-type-neutral {
+  color: #374151; /* 中性星 - 深灰色 */
+}
+
 /* 宫位底部 */
 .ziwei-palace-footer {
   display: flex;
