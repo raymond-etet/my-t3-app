@@ -1,5 +1,14 @@
 {
-  "/api/astrology/ziwei/route": "app/api/astrology/ziwei/route.js",
   "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
+  "/api/admin/ziwei-charts/route": "app/api/admin/ziwei-charts/route.js",
+  "/api/admin/users/route": "app/api/admin/users/route.js",
+  "/api/auth/register/route": "app/api/auth/register/route.js",
+  "/api/astrology/ziwei/route": "app/api/astrology/ziwei/route.js",
+  "/api/debug/session/route": "app/api/debug/session/route.js",
+  "/page": "app/page.js",
+  "/auth/signin/page": "app/auth/signin/page.js",
+  "/calculator/u-contract/page": "app/calculator/u-contract/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/auth/signup/page": "app/auth/signup/page.js",
   "/astrology/ziwei/page": "app/astrology/ziwei/page.js"
 }

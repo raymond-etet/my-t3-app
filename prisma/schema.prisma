@@ -54,8 +54,15 @@ model User {
     emailVerified DateTime?
     image         String?
     password      String?   // 添加密码字段用于传统认证
+    role          String    @default("user") // 用户角色：user, admin
+    gender        String?   // 性别：male, female
+    registrationIp String?  // 注册IP地址
+    lastOnlineAt  DateTime? // 最后在线时间
+    createdAt     DateTime  @default(now())
+    updatedAt     DateTime  @default(now()) @updatedAt
     accounts      Account[]
     sessions      Session[]
+    ziweiCharts   ZiweiChart[] // 紫微排盘记录
 }
 
 model VerificationToken {
@@ -64,4 +71,22 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+// 紫微排盘记录表
+model ZiweiChart {
+    id        String   @id @default(cuid())
+    userId    String
+    name      String?  // 排盘对象姓名
+    gender    String   // 性别：male, female
+    birthDate DateTime // 出生日期
+    birthTime String   // 出生时间
+    location  String?  // 出生地点
+    chartData Json     // 排盘结果数据
+    createdAt DateTime @default(now())
+
+    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@index([userId])
+    @@index([createdAt])
 }

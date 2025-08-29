@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { astro } from "iztro";
 import { starCategories } from "~/lib/star-translations";
+import { auth } from "~/server/auth";
+import { db } from "~/server/db";
 
 // 手动修正函数，根据用户标准调整特定星曜位置
 function applyManualCorrections(
@@ -317,6 +319,28 @@ export async function GET(request: NextRequest) {
           }
         : null,
     };
+
+    // 6. 保存排盘记录到数据库（如果用户已登录）
+    try {
+      const session = await auth();
+      if (session?.user?.id) {
+        await db.ziweiChart.create({
+          data: {
+            userId: session.user.id,
+            name: searchParams.get("name") || null,
+            gender: gender,
+            birthDate: new Date(birthday),
+            birthTime: TIME_MAPPING[birthTime] || "未知",
+            location: searchParams.get("location") || null,
+            chartData: responseData,
+          },
+        });
+        console.log("排盘记录已保存到数据库");
+      }
+    } catch (dbError) {
+      console.error("保存排盘记录失败:", dbError);
+      // 不影响排盘结果返回，只记录错误
+    }
 
     return NextResponse.json(responseData);
   } catch (error) {

@@ -14,13 +14,14 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      role: string;
       // ...other properties
-      // role: UserRole;
     } & DefaultSession["user"];
   }
 
   interface User {
     password?: string | null;
+    role?: string;
   }
 }
 
@@ -59,11 +60,24 @@ export const authConfig = {
           return null;
         }
 
+        // 设置管理员角色
+        const role = user.email === "raymondetet@gmail.com" ? "admin" : "user";
+
+        // 更新用户最后在线时间
+        await db.user.update({
+          where: { id: user.id },
+          data: {
+            lastOnlineAt: new Date(),
+            role: role,
+          },
+        });
+
         return {
           id: user.id,
           email: user.email,
           name: user.name,
           image: user.image,
+          role: role,
         };
       },
     }),
@@ -74,8 +88,15 @@ export const authConfig = {
       user: {
         ...session.user,
         id: token.sub,
+        role: token.role as string,
       },
     }),
+    jwt: ({ token, user }) => {
+      if (user) {
+        token.role = user.role;
+      }
+      return token;
+    },
   },
   pages: {
     signIn: "/auth/signin",

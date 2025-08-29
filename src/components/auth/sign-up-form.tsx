@@ -8,6 +8,7 @@ export function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [gender, setGender] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -32,6 +33,7 @@ export function SignUp() {
           name,
           email,
           password,
+          gender,
         }),
       });
 
@@ -97,6 +99,22 @@ export function SignUp() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
               />
+            </div>
+
+            <div className="form-control w-full">
+              <label className="label">
+                <span className="label-text text-base font-medium">性别</span>
+              </label>
+              <select
+                className="select select-bordered w-full"
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                required
+              >
+                <option value="">请选择性别</option>
+                <option value="male">男</option>
+                <option value="female">女</option>
+              </select>
             </div>
 
             <div className="form-control w-full">

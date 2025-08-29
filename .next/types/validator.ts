@@ -47,6 +47,12 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
 }
 
 
+// Validate ../../src/app/admin/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/admin/page.js")
+  handler satisfies AppPageConfig<"/admin">
+}
+
 // Validate ../../src/app/astrology/ziwei/page.tsx
 {
   const handler = {} as typeof import("../../src/app/astrology/ziwei/page.js")
@@ -83,6 +89,18 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   handler satisfies AppPageConfig<"/profile">
 }
 
+// Validate ../../src/app/api/admin/users/route.ts
+{
+  const handler = {} as typeof import("../../src/app/api/admin/users/route.js")
+  handler satisfies RouteHandlerConfig<"/api/admin/users">
+}
+
+// Validate ../../src/app/api/admin/ziwei-charts/route.ts
+{
+  const handler = {} as typeof import("../../src/app/api/admin/ziwei-charts/route.js")
+  handler satisfies RouteHandlerConfig<"/api/admin/ziwei-charts">
+}
+
 // Validate ../../src/app/api/astrology/ziwei/route.ts
 {
   const handler = {} as typeof import("../../src/app/api/astrology/ziwei/route.js")
@@ -99,6 +117,12 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
 {
   const handler = {} as typeof import("../../src/app/api/auth/register/route.js")
   handler satisfies RouteHandlerConfig<"/api/auth/register">
+}
+
+// Validate ../../src/app/api/debug/session/route.ts
+{
+  const handler = {} as typeof import("../../src/app/api/debug/session/route.js")
+  handler satisfies RouteHandlerConfig<"/api/debug/session">
 }
 
 
