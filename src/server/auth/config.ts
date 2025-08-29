@@ -30,7 +30,10 @@ declare module "next-auth" {
  *
  * @see https://next-auth.js.org/configuration/options
  */
+// 基础配置，不包含数据库适配器，用于Edge Runtime
 export const authConfig = {
+  secret: process.env.AUTH_SECRET,
+  trustHost: true,
   providers: [
     CredentialsProvider({
       name: "credentials",
@@ -39,46 +42,40 @@ export const authConfig = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        // 在Edge Runtime中，我们不能直接访问数据库
+        // 这里需要通过API调用来验证用户
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
-        const user = await db.user.findUnique({
-          where: { email: credentials.email as string },
-        });
+        try {
+          // 调用验证API
+          const response = await fetch(
+            `${
+              process.env.NEXTAUTH_URL || "http://localhost:3000"
+            }/api/auth/verify-credentials`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                email: credentials.email,
+                password: credentials.password,
+              }),
+            }
+          );
 
-        if (!user || !(user as any).password) {
+          if (!response.ok) {
+            return null;
+          }
+
+          const user = await response.json();
+          return user;
+        } catch (error) {
+          console.error("Auth error:", error);
           return null;
         }
-
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password as string,
-          (user as any).password
-        );
-
-        if (!isPasswordValid) {
-          return null;
-        }
-
-        // 设置管理员角色
-        const role = user.email === "raymondetet@gmail.com" ? "admin" : "user";
-
-        // 更新用户最后在线时间
-        await db.user.update({
-          where: { id: user.id },
-          data: {
-            lastOnlineAt: new Date(),
-            role: role,
-          },
-        });
-
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
-          role: role,
-        };
       },
     }),
   ],
@@ -100,5 +97,7 @@ export const authConfig = {
   },
   pages: {
     signIn: "/auth/signin",
+    error: "/auth/error",
   },
+  session: { strategy: "jwt" }, // 使用JWT策略而不是数据库会话
 } satisfies NextAuthConfig;
