@@ -16,19 +16,19 @@
       "static/chunks/428-c82b388a6d4e43ee.js",
       "static/chunks/app/layout-e97e6581ce620847.js"
     ],
-    "/api/admin/users/route": [
-      "static/chunks/webpack-8b60a34317e5449e.js",
-      "static/chunks/2c913ea3-f77b522ca87815ac.js",
-      "static/chunks/341-2d546ef92ef35bc1.js",
-      "static/chunks/main-app-9ade7692673f39e2.js",
-      "static/chunks/app/api/admin/users/route-25d4b375b6c6d410.js"
-    ],
     "/api/admin/ziwei-charts/route": [
       "static/chunks/webpack-8b60a34317e5449e.js",
       "static/chunks/2c913ea3-f77b522ca87815ac.js",
       "static/chunks/341-2d546ef92ef35bc1.js",
       "static/chunks/main-app-9ade7692673f39e2.js",
       "static/chunks/app/api/admin/ziwei-charts/route-25d4b375b6c6d410.js"
+    ],
+    "/api/admin/users/route": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/chunks/app/api/admin/users/route-25d4b375b6c6d410.js"
     ],
     "/api/astrology/ziwei/route": [
       "static/chunks/webpack-8b60a34317e5449e.js",
@@ -51,19 +51,19 @@
       "static/chunks/main-app-9ade7692673f39e2.js",
       "static/chunks/app/api/debug/session/route-25d4b375b6c6d410.js"
     ],
-    "/api/user/ziwei-charts/route": [
-      "static/chunks/webpack-8b60a34317e5449e.js",
-      "static/chunks/2c913ea3-f77b522ca87815ac.js",
-      "static/chunks/341-2d546ef92ef35bc1.js",
-      "static/chunks/main-app-9ade7692673f39e2.js",
-      "static/chunks/app/api/user/ziwei-charts/route-25d4b375b6c6d410.js"
-    ],
     "/api/user/ziwei-charts/[id]/route": [
       "static/chunks/webpack-8b60a34317e5449e.js",
       "static/chunks/2c913ea3-f77b522ca87815ac.js",
       "static/chunks/341-2d546ef92ef35bc1.js",
       "static/chunks/main-app-9ade7692673f39e2.js",
       "static/chunks/app/api/user/ziwei-charts/[id]/route-25d4b375b6c6d410.js"
+    ],
+    "/api/user/ziwei-charts/route": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/chunks/app/api/user/ziwei-charts/route-25d4b375b6c6d410.js"
     ],
     "/api/auth/[...nextauth]/route": [
       "static/chunks/webpack-8b60a34317e5449e.js",
@@ -91,22 +91,15 @@
       "static/chunks/224-9b071da64527bf77.js",
       "static/chunks/app/astrology/ziwei/page-9dbaedf87c13f1fb.js"
     ],
-    "/calculator/u-contract/page": [
+    "/page": [
       "static/chunks/webpack-8b60a34317e5449e.js",
       "static/chunks/2c913ea3-f77b522ca87815ac.js",
       "static/chunks/341-2d546ef92ef35bc1.js",
       "static/chunks/main-app-9ade7692673f39e2.js",
       "static/chunks/428-c82b388a6d4e43ee.js",
       "static/chunks/123-02cd6de926e73522.js",
-      "static/chunks/app/calculator/u-contract/page-57de754e9d016322.js"
-    ],
-    "/auth/signup/page": [
-      "static/chunks/webpack-8b60a34317e5449e.js",
-      "static/chunks/2c913ea3-f77b522ca87815ac.js",
-      "static/chunks/341-2d546ef92ef35bc1.js",
-      "static/chunks/main-app-9ade7692673f39e2.js",
-      "static/chunks/428-c82b388a6d4e43ee.js",
-      "static/chunks/app/auth/signup/page-3cfaa878cc0df134.js"
+      "static/chunks/828-fb51fb65d7eefcd8.js",
+      "static/chunks/app/page-d815c5a9356511a8.js"
     ],
     "/auth/signin/page": [
       "static/chunks/webpack-8b60a34317e5449e.js",
@@ -115,6 +108,14 @@
       "static/chunks/main-app-9ade7692673f39e2.js",
       "static/chunks/428-c82b388a6d4e43ee.js",
       "static/chunks/app/auth/signin/page-2fe1b919b7e2d3b1.js"
+    ],
+    "/auth/signup/page": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/chunks/428-c82b388a6d4e43ee.js",
+      "static/chunks/app/auth/signup/page-3cfaa878cc0df134.js"
     ],
     "/profile/page": [
       "static/chunks/webpack-8b60a34317e5449e.js",
@@ -126,15 +127,23 @@
       "static/chunks/828-fb51fb65d7eefcd8.js",
       "static/chunks/app/profile/page-d815c5a9356511a8.js"
     ],
-    "/page": [
+    "/calculator/u-contract/page": [
       "static/chunks/webpack-8b60a34317e5449e.js",
       "static/chunks/2c913ea3-f77b522ca87815ac.js",
       "static/chunks/341-2d546ef92ef35bc1.js",
       "static/chunks/main-app-9ade7692673f39e2.js",
       "static/chunks/428-c82b388a6d4e43ee.js",
       "static/chunks/123-02cd6de926e73522.js",
-      "static/chunks/828-fb51fb65d7eefcd8.js",
-      "static/chunks/app/page-d815c5a9356511a8.js"
+      "static/chunks/app/calculator/u-contract/page-57de754e9d016322.js"
+    ],
+    "/records/page": [
+      "static/chunks/webpack-8b60a34317e5449e.js",
+      "static/chunks/2c913ea3-f77b522ca87815ac.js",
+      "static/chunks/341-2d546ef92ef35bc1.js",
+      "static/chunks/main-app-9ade7692673f39e2.js",
+      "static/chunks/123-02cd6de926e73522.js",
+      "static/chunks/685-7804695053f617d8.js",
+      "static/chunks/app/records/page-656d71f73c4884fc.js"
     ],
     "/records/[id]/page": [
       "static/chunks/webpack-8b60a34317e5449e.js",
@@ -146,15 +155,6 @@
       "static/chunks/685-7804695053f617d8.js",
       "static/chunks/224-9b071da64527bf77.js",
       "static/chunks/app/records/[id]/page-5f0ddf48d2e70616.js"
-    ],
-    "/records/page": [
-      "static/chunks/webpack-8b60a34317e5449e.js",
-      "static/chunks/2c913ea3-f77b522ca87815ac.js",
-      "static/chunks/341-2d546ef92ef35bc1.js",
-      "static/chunks/main-app-9ade7692673f39e2.js",
-      "static/chunks/123-02cd6de926e73522.js",
-      "static/chunks/685-7804695053f617d8.js",
-      "static/chunks/app/records/page-656d71f73c4884fc.js"
     ]
   }
 }
