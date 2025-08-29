@@ -1,6 +1,8 @@
 {
+  "/api/astrology/ziwei/route": "app/api/astrology/ziwei/route.js",
   "/api/auth/[...nextauth]/route": "app-edge-has-no-entrypoint",
   "/api/auth/verify-credentials/route": "app/api/auth/verify-credentials/route.js",
+  "/astrology/ziwei/page": "app/astrology/ziwei/page.js",
   "/auth/signin/page": "app-edge-has-no-entrypoint",
   "/calculator/u-contract/page": "app-edge-has-no-entrypoint",
   "/page": "app-edge-has-no-entrypoint"

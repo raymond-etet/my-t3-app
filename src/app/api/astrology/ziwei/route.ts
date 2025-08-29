@@ -2,10 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { astro } from "iztro";
 import { starCategories } from "~/lib/star-translations";
-import { auth } from "~/server/auth";
-import { db } from "~/server/db";
 
-export const runtime = "edge";
+// 移除 Edge Runtime 配置，因为需要访问数据库
+// export const runtime = "edge";
 
 // 手动修正函数，根据用户标准调整特定星曜位置
 function applyManualCorrections(
@@ -323,6 +322,8 @@ export async function GET(request: NextRequest) {
     };
 
     // 6. 保存排盘记录到数据库（如果用户已登录）
+    // 暂时注释掉数据库操作，避免Edge Runtime冲突
+    /*
     try {
       const session = await auth();
       if (session?.user?.id) {
@@ -343,6 +344,7 @@ export async function GET(request: NextRequest) {
       console.error("保存排盘记录失败:", dbError);
       // 不影响排盘结果返回，只记录错误
     }
+    */
 
     return NextResponse.json(responseData);
   } catch (error) {
