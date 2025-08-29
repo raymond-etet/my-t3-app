@@ -1,212 +1,147 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import * as iztro from "iztro";
-import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-import { Lunar, Solar } from "lunar-typescript";
-
-// 扩展 dayjs 以支持时区
-dayjs.extend(utc);
-dayjs.extend(timezone);
+import { astro } from "iztro";
 
 /**
- * @file 紫微斗数排盘 API
- * @description 该 API 接收出生信息，使用 iztro 库计算命盘，并返回详细的 JSON 数据。
- * 支持公历和农历输入，自动处理日期转换。
- * @author Kilo Code
- * @date 2025-08-28
+ * @file 紫微斗数排盘 API - 完全照搬react-iztro-main的逻辑
+ * @description 使用与react-iztro-main相同的参数格式和调用方式
  */
 
-// 定义请求参数的 Zod 验证模式
+// 时辰映射表 - 照搬react-iztro-main的逻辑
+const TIME_MAPPING = [
+  "23:00-01:00", // 0: 子时
+  "01:00-03:00", // 1: 丑时
+  "03:00-05:00", // 2: 寅时
+  "05:00-07:00", // 3: 卯时
+  "07:00-09:00", // 4: 辰时
+  "09:00-11:00", // 5: 巳时
+  "11:00-13:00", // 6: 午时
+  "13:00-15:00", // 7: 未时
+  "15:00-17:00", // 8: 申时
+  "17:00-19:00", // 9: 酉时
+  "19:00-21:00", // 10: 戌时
+  "21:00-23:00", // 11: 亥时
+];
+
+// 定义请求参数的 Zod 验证模式 - 照搬react-iztro-main的参数格式
 const ziweiSchema = z.object({
-  birth_date: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "日期格式必须是 YYYY-MM-DD"),
-  birth_time: z.string().regex(/^\d{2}:\d{2}$/, "时间格式必须是 HH:mm"),
-  gender: z.enum(["male", "female"], { message: "无效的性别" }),
-  // 修复：正确解析字符串形式的布尔值
-  lunar: z
-    .string()
-    .optional()
-    .default("false")
-    .transform((val) => val === "true"),
+  birthday: z.string(), // 格式: "2025-01-29"
+  birthTime: z.number().min(0).max(12), // 时辰索引: 0-12
+  gender: z.enum(["male", "female"]),
+  birthdayType: z.enum(["solar", "lunar"]).default("solar"),
+  fixLeap: z.boolean().default(true),
+  isLeapMonth: z.boolean().default(false),
+  lang: z.string().default("zh-CN"),
+  astroType: z.enum(["heaven", "earth", "human"]).default("heaven"),
 });
 
 export async function GET(request: NextRequest) {
   try {
-    // 1. 从请求的 URL 中提取查询参数
+    // 1. 从请求的 URL 中提取查询参数 - 转换为react-iztro-main格式
     const searchParams = request.nextUrl.searchParams;
+
+    // 将传统API参数转换为react-iztro-main格式
+    const birthDate = searchParams.get("birth_date") || "";
+    const birthTimeStr = searchParams.get("birth_time") || "";
+    const genderStr = searchParams.get("gender") || "";
+    const lunarStr = searchParams.get("lunar") || "false";
+
+    // 转换时间为时辰索引
+    const [hourStr] = birthTimeStr.split(":");
+    const hour = parseInt(hourStr || "0") || 0;
+    let birthTimeIndex = 0;
+    if (hour >= 23 || hour < 1) birthTimeIndex = 0; // 子时
+    else if (hour >= 1 && hour < 3) birthTimeIndex = 1; // 丑时
+    else if (hour >= 3 && hour < 5) birthTimeIndex = 2; // 寅时
+    else if (hour >= 5 && hour < 7) birthTimeIndex = 3; // 卯时
+    else if (hour >= 7 && hour < 9) birthTimeIndex = 4; // 辰时
+    else if (hour >= 9 && hour < 11) birthTimeIndex = 5; // 巳时
+    else if (hour >= 11 && hour < 13) birthTimeIndex = 6; // 午时
+    else if (hour >= 13 && hour < 15) birthTimeIndex = 7; // 未时
+    else if (hour >= 15 && hour < 17) birthTimeIndex = 8; // 申时
+    else if (hour >= 17 && hour < 19) birthTimeIndex = 9; // 酉时
+    else if (hour >= 19 && hour < 21) birthTimeIndex = 10; // 戌时
+    else if (hour >= 21 && hour < 23) birthTimeIndex = 11; // 亥时
+
+    // 构建react-iztro-main格式的参数 - 尝试不同的astroType
+    const astroTypeParam = searchParams.get("astroType") || "heaven";
     const params = {
-      birth_date: searchParams.get("birth_date") || "",
-      birth_time: searchParams.get("birth_time") || "",
-      gender: searchParams.get("gender") || "",
-      lunar: searchParams.get("lunar") || "false",
+      birthday: birthDate,
+      birthTime: birthTimeIndex,
+      gender: genderStr as "male" | "female",
+      birthdayType:
+        lunarStr === "true" ? "lunar" : ("solar" as "solar" | "lunar"),
+      fixLeap: true,
+      isLeapMonth: false,
+      lang: "zh-CN",
+      astroType: astroTypeParam as "heaven" | "earth" | "human",
     };
 
     // 2. 使用 Zod 验证和解析参数
     const validatedParams = ziweiSchema.parse(params);
-    const { birth_date, birth_time, gender, lunar } = validatedParams;
-
-    console.log("=== API 参数解析调试 ===");
-    console.log("1. 原始 URL 参数:", {
-      birth_date: searchParams.get("birth_date"),
-      birth_time: searchParams.get("birth_time"),
-      gender: searchParams.get("gender"),
-      lunar: searchParams.get("lunar"),
-    });
-    console.log("2. Zod 验证后的参数:", {
-      birth_date,
-      birth_time,
+    const {
+      birthday,
+      birthTime,
       gender,
-      lunar,
-      lunar_type: typeof lunar,
+      birthdayType,
+      fixLeap,
+      isLeapMonth,
+      lang,
+      astroType,
+    } = validatedParams;
+
+    console.log("=== 使用react-iztro-main格式排盘 ===");
+    console.log("参数:", {
+      birthday,
+      birthTime,
+      gender,
+      birthdayType,
+      fixLeap,
+      isLeapMonth,
+      lang,
+      astroType,
     });
 
-    // 3. 处理时间和时辰
-    const fullDateTimeStr = `${birth_date} ${birth_time}`;
-    const birthDateObj = dayjs.tz(
-      fullDateTimeStr,
-      "YYYY-MM-DD HH:mm",
-      "Asia/Shanghai"
-    );
-
-    const hour = birthDateObj.hour();
-    // 时辰索引计算：0=子时(23:00-01:00), 1=丑时(01:00-03:00), ..., 11=亥时(21:00-23:00)
-    const birthTimeIndex = Math.floor((hour + 1) / 2) % 12;
-
-    console.log("处理后的参数:", {
-      hour,
-      birthTimeIndex,
-      timeRange: getTimeRange(birthTimeIndex),
+    // 3. 配置iztro库使用正确的年分界点 - 修复排盘错误
+    // 关键修复：使用正月初一作为年分界点，而不是立春
+    astro.config({
+      yearDivide: "normal", // 正月初一分界，而不是立春分界
+      algorithm: "default", // 使用默认算法
     });
 
-    // 4. 设置 iztro 语言和性别
-    const lang = "zh-CN";
+    let chart;
     const genderText = gender === "male" ? "男" : "女";
 
-    // 5. 处理日期转换和排盘
-    let chart: any;
-    let actualLunarDate: string;
-    let actualSolarDate: string;
-    let isLunarInput: boolean = false;
-
-    console.log("3. 日期类型判断:", {
-      lunar_value: lunar,
-      will_process_as: lunar ? "农历模式" : "公历模式",
-    });
-
-    if (lunar) {
-      // 用户输入的是农历日期
-      console.log("🌙 处理农历输入:", birth_date);
-      isLunarInput = true;
-
-      try {
-        // 解析农历日期
-        const dateParts = birth_date.split("-").map(Number);
-        if (dateParts.length !== 3 || dateParts.some(isNaN)) {
-          throw new Error("农历日期格式无效");
-        }
-
-        const [year, month, day] = dateParts;
-
-        // 确保数据类型正确
-        if (!year || !month || !day) {
-          throw new Error("农历日期解析失败：年月日不能为空");
-        }
-
-        // 创建农历对象
-        const lunarDateObj = Lunar.fromYmd(year, month, day);
-
-        // 获取对应的公历日期（用于 iztro 排盘）
-        const solarDateObj = lunarDateObj.getSolar();
-        actualSolarDate = solarDateObj.toYmd();
-
-        // 格式化农历显示
-        actualLunarDate = `${lunarDateObj.getYearInGanZhi()}年${lunarDateObj.getMonthInChinese()}月${lunarDateObj.getDayInChinese()}`;
-
-        console.log("农历转公历:", {
-          农历输入: birth_date,
-          农历格式化: actualLunarDate,
-          对应公历: actualSolarDate,
-        });
-
-        // 使用转换后的公历日期进行排盘
-        chart = iztro.astro.byLunar(
-          year.toString(),
-          month.toString(),
-          day.toString(),
-          birthTimeIndex,
-          genderText,
-          lang
-        );
-
-        // 重要：重新设置正确的农历八字
-        const correctChineseDate = `${lunarDateObj.getYearInGanZhi()} ${lunarDateObj.getMonthInGanZhi()} ${lunarDateObj.getDayInGanZhi()}`;
-        chart.chineseDate = correctChineseDate;
-        chart.isLunarInput = true;
-      } catch (error) {
-        console.error("农历日期处理失败:", error);
-        throw new Error("农历日期转换失败，请检查日期是否有效");
-      }
+    if (birthdayType === "lunar") {
+      // 农历排盘
+      chart = astro.byLunar(
+        birthday,
+        birthTime,
+        genderText,
+        isLeapMonth,
+        fixLeap,
+        lang
+      );
     } else {
-      // 用户输入的是公历日期
-      console.log("☀️ 处理公历输入:", birth_date);
-      isLunarInput = false;
-
-      try {
-        // 直接使用公历日期进行排盘
-        chart = iztro.astro.bySolar(
-          birth_date,
-          birthTimeIndex,
-          genderText,
-          true, // fixLeap
-          lang
-        );
-
-        // 获取对应的农历日期用于显示
-        const dateParts = birth_date.split("-").map(Number);
-        if (dateParts.length !== 3 || dateParts.some(isNaN)) {
-          throw new Error("公历日期格式无效");
-        }
-        const solarDateObj = Solar.fromYmd(
-          dateParts[0] as number,
-          dateParts[1] as number,
-          dateParts[2] as number
-        );
-        const lunarDateObj = solarDateObj.getLunar();
-        actualLunarDate = `${lunarDateObj.getYearInGanZhi()}年${lunarDateObj.getMonthInChinese()}月${lunarDateObj.getDayInChinese()}`;
-        actualSolarDate = birth_date;
-
-        console.log("公历转农历:", {
-          公历输入: birth_date,
-          对应农历: actualLunarDate,
-        });
-      } catch (error) {
-        console.error("公历日期处理失败:", error);
-        throw new Error("公历日期处理失败，请检查日期是否有效");
-      }
+      // 公历排盘
+      chart = astro.bySolar(birthday, birthTime, genderText, fixLeap, lang);
     }
 
-    // 6. 处理宫位数据，确保正确标识身宫
-    const processedPalaces = chart.palaces.map((palace: any, index: number) => {
-      // 添加身宫和命宫标识
-      return {
-        ...palace,
-        index: index,
-        isBodyPalace: palace.isBodyPalace,
-        isSoulPalace: palace.earthlyBranch === chart.earthlyBranchOfSoulPalace,
-      };
+    console.log("排盘完成:", {
+      八字: chart.chineseDate,
+      命宫: chart.earthlyBranchOfSoulPalace,
+      身宫: chart.earthlyBranchOfBodyPalace,
+      五行局: chart.fiveElementsClass,
     });
 
-    // 7. 构建返回数据
+    // 4. 构建返回数据 - 保持与原API兼容的格式
     const responseData = {
       gender: genderText,
-      solarDate: actualSolarDate,
-      lunarDate: actualLunarDate,
+      solarDate: birthday,
+      lunarDate: chart.lunarDate || "",
       chineseDate: chart.chineseDate,
       time: chart.time,
-      timeRange: chart.timeRange,
+      timeRange: TIME_MAPPING[birthTime] || "未知",
       sign: chart.sign,
       zodiac: chart.zodiac,
       earthlyBranchOfBodyPalace: chart.earthlyBranchOfBodyPalace,
@@ -214,23 +149,21 @@ export async function GET(request: NextRequest) {
       soul: chart.soul,
       body: chart.body,
       fiveElementsClass: chart.fiveElementsClass,
-      palaces: processedPalaces,
-      isLunarInput,
-      birthTimeIndex,
+      palaces: chart.palaces.map((palace: any, index: number) => ({
+        ...palace,
+        index: index,
+        isBodyPalace: palace.isBodyPalace,
+        isSoulPalace: palace.earthlyBranch === chart.earthlyBranchOfSoulPalace,
+      })),
+      isLunarInput: birthdayType === "lunar",
+      birthTimeIndex: birthTime,
       originalInput: {
-        birth_date,
-        birth_time,
-        gender,
-        lunar,
+        birth_date: birthday,
+        birth_time: birthTimeStr,
+        gender: gender,
+        lunar: lunarStr,
       },
     };
-
-    console.log("排盘完成，返回数据:", {
-      八字: chart.chineseDate,
-      命宫: chart.earthlyBranchOfSoulPalace,
-      身宫: chart.earthlyBranchOfBodyPalace,
-      五行局: chart.fiveElementsClass,
-    });
 
     return NextResponse.json(responseData);
   } catch (error) {
@@ -245,25 +178,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
-}
-
-/**
- * 根据时辰索引获取时辰范围
- */
-function getTimeRange(timeIndex: number): string {
-  const timeRanges = [
-    "23:00-01:00", // 子时
-    "01:00-03:00", // 丑时
-    "03:00-05:00", // 寅时
-    "05:00-07:00", // 卯时
-    "07:00-09:00", // 辰时
-    "09:00-11:00", // 巳时
-    "11:00-13:00", // 午时
-    "13:00-15:00", // 未时
-    "15:00-17:00", // 申时
-    "17:00-19:00", // 酉时
-    "19:00-21:00", // 戌时
-    "21:00-23:00", // 亥时
-  ];
-  return timeRanges[timeIndex] || "未知";
 }
