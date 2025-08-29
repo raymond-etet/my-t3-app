@@ -2,6 +2,8 @@ import { LoginButton } from "~/components/auth/login-button";
 import { auth } from "~/server/auth";
 import Image from "next/image";
 
+export const runtime = "edge";
+
 export default async function HomePage() {
   const session = await auth();
 
