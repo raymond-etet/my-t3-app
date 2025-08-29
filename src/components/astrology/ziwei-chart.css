@@ -260,10 +260,92 @@
   box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
 }
 
-.ziwei-sanhe-connection {
+/* 三方四正连线容器 */
+.ziwei-sanhe-connections {
   position: absolute;
-  border: 1px dashed #8b5cf6;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
   z-index: 5;
+}
+
+/* 三方四正连线 */
+.ziwei-sanhe-line {
+  position: absolute;
+  background: linear-gradient(45deg, #8b5cf6, #a855f7);
+  border-radius: 1px;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+  box-shadow: 0 0 4px rgba(139, 92, 246, 0.3);
+}
+
+.ziwei-sanhe-line:hover {
+  opacity: 1;
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.5);
+}
+
+/* 连线端点 */
+.ziwei-sanhe-line::before,
+.ziwei-sanhe-line::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #8b5cf6;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 4px rgba(139, 92, 246, 0.4);
+}
+
+.ziwei-sanhe-line::before {
+  top: 50%;
+  left: -3px;
+  transform: translateY(-50%);
+}
+
+.ziwei-sanhe-line::after {
+  top: 50%;
+  right: -3px;
+  transform: translateY(-50%);
+}
+
+/* 标准盘中的三方四正连线 */
+.ziwei-standard-chart .ziwei-sanhe-connections {
+  display: none; /* 默认隐藏 */
+}
+
+.ziwei-standard-chart.show-sanhe-lines .ziwei-sanhe-connections {
+  display: block;
+}
+
+/* 三方四正连线切换按钮样式 */
+.ziwei-sanhe-toggle {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  background: rgba(139, 92, 246, 0.9);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+
+.ziwei-sanhe-toggle:hover {
+  background: rgba(139, 92, 246, 1);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.ziwei-sanhe-toggle.active {
+  background: #8b5cf6;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
 }
 
 /* 四化盘样式 */

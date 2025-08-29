@@ -7,6 +7,7 @@ import { ZiweiTextChart } from "./ziwei-text-chart";
 import { ZiweiFlyingChart } from "./ziwei-flying-chart";
 import { ZiweiSanheChart } from "./ziwei-sanhe-chart";
 import { ZiweiSihuaChart } from "./ziwei-sihua-chart";
+import { ZiweiSanheLines } from "./ziwei-sanhe-lines";
 import "./ziwei-chart.css";
 
 // 标准紫微斗数十二宫布局映射
@@ -47,6 +48,7 @@ export function ZiweiChart() {
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "text">("grid");
   const [chartType, setChartType] = useState<ChartType>("standard");
+  const [showSanheLines, setShowSanheLines] = useState<boolean>(false);
 
   const handleSubmit = async () => {
     if (!birthDate || !birthTime) {
@@ -300,8 +302,21 @@ export function ZiweiChart() {
             <>
               {chartType === "standard" && (
                 <div
-                  className={`ziwei-astrolabe ${getChartTypeClass(chartType)}`}
+                  className={`ziwei-astrolabe ${getChartTypeClass(chartType)} ${
+                    showSanheLines ? "show-sanhe-lines" : ""
+                  }`}
                 >
+                  {/* 三方四正连线切换按钮 */}
+                  <button
+                    className={`ziwei-sanhe-toggle ${
+                      showSanheLines ? "active" : ""
+                    }`}
+                    onClick={() => setShowSanheLines(!showSanheLines)}
+                    title="切换三方四正连线显示"
+                  >
+                    {showSanheLines ? "隐藏连线" : "显示连线"}
+                  </button>
+
                   {/* 生成12个宫位 */}
                   {Array.from({ length: 12 }, (_, palaceIndex) => {
                     const palace = chartData.palaces[palaceIndex];
@@ -319,6 +334,12 @@ export function ZiweiChart() {
                       />
                     );
                   })}
+
+                  {/* 三方四正连线 */}
+                  <ZiweiSanheLines
+                    chartData={chartData}
+                    showLines={showSanheLines}
+                  />
 
                   {/* 中心区域显示基本信息 - 占据4个格子 */}
                   <div className="ziwei-center-area">
@@ -490,34 +511,28 @@ function generateFlyingStarData(palaces: any[]): any[] {
   return flyingStars;
 }
 
+// 辅助函数：根据命宫地支找到对应的宫位索引
+function findSoulPalaceIndex(chartData: ExtendedIztroChart): number {
+  // 直接从宫位数据中找到命宫
+  for (let i = 0; i < chartData.palaces.length; i++) {
+    const palace = chartData.palaces[i];
+    if (
+      palace &&
+      palace.earthlyBranch === chartData.earthlyBranchOfSoulPalace
+    ) {
+      return i;
+    }
+  }
+  return 0; // 默认返回0
+}
+
 // 临时辅助函数：生成三合盘数据
 function generateSanheGroups(soulPalaceBranch: string): any[] {
-  // 根据命宫地支确定三方四正
-  const branchMap: { [key: string]: number } = {
-    子: 0,
-    丑: 1,
-    寅: 2,
-    卯: 3,
-    辰: 4,
-    巳: 5,
-    午: 6,
-    未: 7,
-    申: 8,
-    酉: 9,
-    戌: 10,
-    亥: 11,
-  };
-
-  const soulIndex = branchMap[soulPalaceBranch] || 0;
+  // 这个函数现在只是占位，实际的命宫索引会在组件中重新计算
   return [
     {
-      centerPalace: soulIndex,
-      relatedPalaces: [
-        soulIndex, // 命宫
-        (soulIndex + 4) % 12, // 官禄宫
-        (soulIndex + 8) % 12, // 财帛宫
-        (soulIndex + 6) % 12, // 迁移宫
-      ],
+      centerPalace: 0, // 占位值，会在组件中重新计算
+      relatedPalaces: [0, 4, 8, 6], // 占位值，会在组件中重新计算
       groupType: "命宫三方四正",
     },
   ];
