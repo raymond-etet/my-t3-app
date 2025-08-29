@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { db } from "~/server/db";
 
+export const runtime = "edge";
+
 export async function POST(request: NextRequest) {
   try {
     const { name, email, password, gender } = await request.json();

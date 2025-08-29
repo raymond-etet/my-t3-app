@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { ZiweiRecordsManager } from "~/components/records/ziwei-records-manager";
 
+export const runtime = "edge";
+
 export default async function RecordsPage() {
   const session = await auth();
 

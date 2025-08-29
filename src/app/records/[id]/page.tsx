@@ -4,6 +4,8 @@ import { db } from "~/server/db";
 import Link from "next/link";
 import { ZiweiRecordDetail } from "~/components/records/ziwei-record-detail";
 
+export const runtime = "edge";
+
 interface PageProps {
   params: Promise<{
     id: string;

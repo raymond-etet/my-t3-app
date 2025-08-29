@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 
+export const runtime = "edge";
+
 export async function GET(request: NextRequest) {
   try {
     // 验证用户身份

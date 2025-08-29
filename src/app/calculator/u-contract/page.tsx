@@ -1,6 +1,8 @@
 import { auth } from "~/server/auth";
 import { redirect } from "next/navigation";
 import { UContractCalculator } from "~/components/calculator/u-contract-calculator";
+
+export const runtime = "edge";
 import Link from "next/link";
 import { SignOutButton } from "~/components/auth/sign-out-button";
 

@@ -1,6 +1,8 @@
 import { auth } from "~/server/auth";
 import { redirect } from "next/navigation";
 import Image from "next/image";
+
+export const runtime = "edge";
 import { LoginButton } from "~/components/auth/login-button";
 
 export default async function ProfilePage() {

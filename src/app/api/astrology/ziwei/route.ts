@@ -5,6 +5,8 @@ import { starCategories } from "~/lib/star-translations";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 
+export const runtime = "edge";
+
 // 手动修正函数，根据用户标准调整特定星曜位置
 function applyManualCorrections(
   horoscopeStarCategories: {

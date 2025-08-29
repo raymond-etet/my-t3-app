@@ -2,6 +2,8 @@ import { auth } from "~/server/auth";
 import { redirect } from "next/navigation";
 import { SignIn } from "~/components/auth/sign-in-form";
 
+export const runtime = "edge";
+
 export default async function SignInPage({
   searchParams,
 }: {

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "~/server/auth";
 import { db } from "~/server/db";
 
+export const runtime = "edge";
+
 // Next.js 15 App Router - 使用 Promise 包装的 params
 export async function GET(
   request: NextRequest,
