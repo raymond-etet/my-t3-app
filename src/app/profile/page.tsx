@@ -65,12 +65,20 @@ export default async function ProfilePage() {
               </div>
             </div>
 
-            <a
-              href="/"
-              className="mt-6 rounded-md bg-purple-600 px-6 py-3 text-sm font-medium text-white hover:bg-purple-700"
-            >
-              返回首页
-            </a>
+            <div className="mt-6 flex flex-col gap-3">
+              <a
+                href="/astrology/ziwei"
+                className="rounded-md bg-green-600 px-6 py-3 text-sm font-medium text-white hover:bg-green-700 text-center"
+              >
+                🔮 新建紫微排盘
+              </a>
+              <a
+                href="/"
+                className="rounded-md bg-purple-600 px-6 py-3 text-sm font-medium text-white hover:bg-purple-700 text-center"
+              >
+                返回首页
+              </a>
+            </div>
           </div>
         </div>
       </div>

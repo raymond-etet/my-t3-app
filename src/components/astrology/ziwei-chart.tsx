@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { ChartType, ExtendedIztroChart } from "./ziwei-types";
 import { ZiweiPalace } from "./ziwei-palace";
 import { ZiweiTextChart } from "./ziwei-text-chart";
@@ -272,12 +272,22 @@ ${palace.name}宫（${palace.heavenlyStem}${palace.earthlyBranch}）${
 5. 人生重要转折点和大运分析`;
 }
 
-export function ZiweiChart() {
+interface ZiweiChartProps {
+  initialData?: ExtendedIztroChart | null;
+  readOnly?: boolean;
+}
+
+export function ZiweiChart({
+  initialData = null,
+  readOnly = false,
+}: ZiweiChartProps = {}) {
   const [birthDate, setBirthDate] = useState<string>("2025-01-29");
   const [birthTime, setBirthTime] = useState<string>("12:00");
   const [gender, setGender] = useState<string>("male");
   const [lunar, setLunar] = useState<boolean>(false);
-  const [chartData, setChartData] = useState<ExtendedIztroChart | null>(null);
+  const [chartData, setChartData] = useState<ExtendedIztroChart | null>(
+    initialData
+  );
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "text">("grid");
@@ -286,6 +296,105 @@ export function ZiweiChart() {
   const [copyStatus, setCopyStatus] = useState<
     "idle" | "copying" | "success" | "error"
   >("idle");
+  const [name, setName] = useState<string>("");
+  const [location, setLocation] = useState<string>("");
+
+  // 处理URL参数
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+
+      const birthDateParam = urlParams.get("birth_date");
+      const birthTimeParam = urlParams.get("birth_time");
+      const genderParam = urlParams.get("gender");
+      const lunarParam = urlParams.get("lunar");
+      const nameParam = urlParams.get("name");
+      const locationParam = urlParams.get("location");
+
+      if (birthDateParam) setBirthDate(birthDateParam);
+      if (birthTimeParam) setBirthTime(birthTimeParam);
+      if (genderParam) setGender(genderParam);
+      if (lunarParam) setLunar(lunarParam === "true");
+      if (nameParam) setName(nameParam);
+      if (locationParam) setLocation(locationParam);
+
+      // 如果有参数，自动进行排盘
+      if (birthDateParam && birthTimeParam && genderParam) {
+        setTimeout(() => {
+          // 直接调用排盘逻辑，避免依赖问题
+          autoSubmit(
+            birthDateParam,
+            birthTimeParam,
+            genderParam,
+            lunarParam === "true",
+            nameParam,
+            locationParam
+          );
+        }, 100);
+      }
+    }
+  }, []);
+
+  // 自动排盘函数
+  const autoSubmit = async (
+    birthDateValue: string,
+    birthTimeValue: string,
+    genderValue: string,
+    lunarValue: boolean,
+    nameValue?: string | null,
+    locationValue?: string | null
+  ) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const params = new URLSearchParams({
+        birth_date: birthDateValue,
+        birth_time: birthTimeValue,
+        gender: genderValue,
+        lunar: lunarValue.toString(),
+        ...(nameValue && { name: nameValue }),
+        ...(locationValue && { location: locationValue }),
+      });
+
+      const response = await fetch(`/api/astrology/ziwei?${params}`);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "排盘失败");
+      }
+
+      const data = await response.json();
+
+      // 转换API响应数据为前端需要的格式
+      const transformedData: ExtendedIztroChart = {
+        gender: data.gender,
+        solarDate: data.solarDate,
+        lunarDate: data.lunarDate,
+        chineseDate: data.chineseDate,
+        time: data.time,
+        timeRange: data.timeRange,
+        sign: data.sign,
+        zodiac: data.zodiac,
+        earthlyBranchOfBodyPalace: data.earthlyBranchOfBodyPalace,
+        earthlyBranchOfSoulPalace: data.earthlyBranchOfSoulPalace,
+        soul: data.soul,
+        body: data.body,
+        fiveElementsClass: data.fiveElementsClass,
+        palaces: data.palaces,
+        chartType: "sanhe",
+        flyingStars: generateFlyingStarData(data.palaces),
+        sanheGroups: generateSanheGroups(),
+        sihuaDisplay: generateSihuaDisplay(data.palaces),
+      };
+
+      setChartData(transformedData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "排盘失败，请稍后重试");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // 复制功能
   const handleCopyToClipboard = async () => {
@@ -319,6 +428,8 @@ export function ZiweiChart() {
         birth_time: birthTime,
         gender: gender,
         lunar: lunar.toString(),
+        ...(name && { name }),
+        ...(location && { location }),
       });
 
       const response = await fetch(`/api/astrology/ziwei?${params}`);
@@ -380,98 +491,126 @@ export function ZiweiChart() {
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              出生日期
-            </label>
-            <input
-              type="date"
-              value={birthDate}
-              onChange={(e) => setBirthDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              出生时间
-            </label>
-            <input
-              type="time"
-              value={birthTime}
-              onChange={(e) => setBirthTime(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              性别
-            </label>
-            <select
-              value={gender}
-              onChange={(e) => setGender(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="male">男</option>
-              <option value="female">女</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              日期类型
-            </label>
-            <div className="flex items-center space-x-4">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  checked={!lunar}
-                  onChange={() => setLunar(false)}
-                  className="mr-2"
-                />
-                公历
+      {!readOnly && (
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                姓名 (可选)
               </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  checked={lunar}
-                  onChange={() => setLunar(true)}
-                  className="mr-2"
-                />
-                农历
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="请输入姓名"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                出生日期
               </label>
+              <input
+                type="date"
+                value={birthDate}
+                onChange={(e) => setBirthDate(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                出生时间
+              </label>
+              <input
+                type="time"
+                value={birthTime}
+                onChange={(e) => setBirthTime(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                性别
+              </label>
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="male">男</option>
+                <option value="female">女</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                出生地点 (可选)
+              </label>
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="请输入出生地点"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                日期类型
+              </label>
+              <div className="flex items-center space-x-4">
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    checked={!lunar}
+                    onChange={() => setLunar(false)}
+                    className="mr-2"
+                  />
+                  公历
+                </label>
+                <label className="flex items-center">
+                  <input
+                    type="radio"
+                    checked={lunar}
+                    onChange={() => setLunar(true)}
+                    className="mr-2"
+                  />
+                  农历
+                </label>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex justify-center space-x-4">
-          <button
-            onClick={handleSubmit}
-            disabled={loading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? "排盘中..." : "开始排盘"}
-          </button>
-
-          {chartData && (
+          <div className="flex justify-center space-x-4">
             <button
-              onClick={handleReset}
-              className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+              onClick={handleSubmit}
+              disabled={loading}
+              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              重新排盘
+              {loading ? "排盘中..." : "开始排盘"}
             </button>
+
+            {chartData && (
+              <button
+                onClick={handleReset}
+                className="px-6 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+              >
+                重新排盘
+              </button>
+            )}
+          </div>
+
+          {error && (
+            <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
+              {error}
+            </div>
           )}
         </div>
-
-        {error && (
-          <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
-            {error}
-          </div>
-        )}
-      </div>
+      )}
 
       {chartData && (
         <div className="bg-white rounded-lg shadow-lg p-6">

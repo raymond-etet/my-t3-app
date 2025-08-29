@@ -89,6 +89,18 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   handler satisfies AppPageConfig<"/profile">
 }
 
+// Validate ../../src/app/records/[id]/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/records/[id]/page.js")
+  handler satisfies AppPageConfig<"/records/[id]">
+}
+
+// Validate ../../src/app/records/page.tsx
+{
+  const handler = {} as typeof import("../../src/app/records/page.js")
+  handler satisfies AppPageConfig<"/records">
+}
+
 // Validate ../../src/app/api/admin/users/route.ts
 {
   const handler = {} as typeof import("../../src/app/api/admin/users/route.js")
@@ -123,6 +135,18 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
 {
   const handler = {} as typeof import("../../src/app/api/debug/session/route.js")
   handler satisfies RouteHandlerConfig<"/api/debug/session">
+}
+
+// Validate ../../src/app/api/user/ziwei-charts/[id]/route.ts
+{
+  const handler = {} as typeof import("../../src/app/api/user/ziwei-charts/[id]/route.js")
+  handler satisfies RouteHandlerConfig<"/api/user/ziwei-charts/[id]">
+}
+
+// Validate ../../src/app/api/user/ziwei-charts/route.ts
+{
+  const handler = {} as typeof import("../../src/app/api/user/ziwei-charts/route.js")
+  handler satisfies RouteHandlerConfig<"/api/user/ziwei-charts">
 }
 
 
